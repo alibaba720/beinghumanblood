@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BeingHuman Blood - Edit Profile</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+  body { background: linear-gradient(135deg, #8B0000, #5a0000); min-height: 100vh; padding: 15px; }
+  .container { width: 100%; max-width: 440px; margin: 0 auto; background: #FFF8F0; border-radius: 18px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
+  
+  .header { background: linear-gradient(135deg, #8B0000, #c0392b); padding: 25px 20px 20px; text-align: center; color: white; position: relative; }
+  .header .back { position: absolute; left: 15px; top: 15px; color: white; font-size: 24px; text-decoration: none; background: rgba(255,255,255,0.2); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .header h1 { font-size: 22px; }
+  .header p { font-size: 13px; opacity: 0.95; margin-top: 3px; }
+  
+  .body-content { padding: 25px 20px; }
+  
+  label { display: block; margin-bottom: 6px; color: #2C1810; font-weight: 600; font-size: 13px; }
+  input, select { width: 100%; padding: 13px; margin-bottom: 15px; border: 2px solid #ead5c0; border-radius: 10px; font-size: 15px; background: white; }
+  input:focus, select:focus { outline: none; border-color: #8B0000; }
+  input:disabled { background: #f0e0d0; color: #888; }
+  
+  .role-display { padding: 13px; margin-bottom: 15px; border-radius: 10px; background: #f0e0d0; font-weight: bold; text-align: center; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+  .role-owner { background: #FFD700; color: #5a0000; }
+  .role-admin { background: #8B0000; color: white; }
+  .role-moderator { background: #c0392b; color: white; }
+  .role-donor { background: #27ae60; color: white; }
+  
+  button { width: 100%; padding: 15px; background: linear-gradient(135deg, #8B0000, #c0392b); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+  button:active { transform: scale(0.98); }
+  button:disabled { opacity: 0.6; }
+  .btn-secondary { background: white; color: #8B0000; border: 2px solid #8B0000; }
+  
+  .msg { padding: 13px; border-radius: 10px; margin-top: 15px; text-align: center; font-weight: 600; font-size: 14px; display: none; }
+  .success { background: #d4edda; color: #155724; border-left: 4px solid #27ae60; }
+  .error { background: #f8d7da; color: #721c24; border-left: 4px solid #c0392b; }
+  
+  .loader { text-align: center; padding: 40px 20px; color: #8B0000; font-weight: 600; }
+  
+  .hint { font-size: 11px; color: #999; margin-top: -10px; margin-bottom: 15px; }
+  
+  .info-badge { background: #fff8e1; border-left: 4px solid #f39c12; padding: 12px; border-radius: 8px; font-size: 12px; color: #666; line-height: 1.5; margin-bottom: 15px; }
+  
+  .footer { text-align: center; padding: 15px; font-size: 11px; color: #999; background: white; border-top: 1px solid #f0e0d0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <a href="auth.html" class="back">‹</a>
+    <h1>✏️ Edit Profile</h1>
+    <p>Apni details update karo</p>
+  </div>
+
+  <div id="loaderBox" class="loader">⏳ Loading...</div>
+
+  <div id="formBox" style="display:none;" class="body-content">
+    
+    <div class="info-badge">
+      ℹ️ Sirf <b>naam, city, blood group aur phone</b> change ho sakta hai. Role (owner/admin) sirf admin change kar sakta hai.
+    </div>
+
+    <label>Poora Naam</label>
+    <input type="text" id="p_name" placeholder="Ali Hassan">
+
+    <label>Email (change nahi ho sakti)</label>
+    <input type="email" id="p_email" disabled>
+
+    <label>City</label>
+    <input type="text" id="p_city" placeholder="Daska">
+
+    <label>Blood Group</label>
+    <select id="p_blood">
+      <option value="">-- Select --</option>
+      <option>A+</option><option>A-</option>
+      <option>B+</option><option>B-</option>
+      <option>AB+</option><option>AB-</option>
+      <option>O+</option><option>O-</option>
+    </select>
+
+    <label>WhatsApp Number</label>
+    <input type="tel" id="p_phone" placeholder="03xxxxxxxxx">
+
+    <label>Tumhara Role</label>
+    <div id="p_role" class="role-display">DONOR</div>
+
+    <button onclick="saveProfile()" id="saveBtn">Save Karo</button>
+    <button class="btn-secondary" onclick="goBack()">Wapas Jao</button>
+    
+    <div id="msgBox" class="msg"></div>
+
+  </div>
+
+  <div class="footer">
+    BeingHuman Blood • Ek qatra, ek zindagi
+  </div>
+
+</div>
+
+<script src="firebase/firebase-app-compat.js"></script>
+<script src="firebase/firebase-auth-compat.js"></script>
+<script src="firebase/firebase-firestore-compat.js"></script>
+<script>
+  function waitForFirebase(callback, tries) {
+    tries = tries || 0;
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      callback();
+    } else if (tries < 40) {
+      setTimeout(function() { waitForFirebase(callback, tries + 1); }, 250);
+    } else {
+      document.getElementById('loaderBox').textContent = '❌ Firebase load nahi hua.';
+    }
+  }
+
+  waitForFirebase(function() {
+    const firebaseConfig = {
+      apiKey: "AIzaSyAp8lKgJuBKpHdXF4pXHr7U3aXwtZUKv_4",
+      authDomain: "beinghuman-blood-pk.firebaseapp.com",
+      projectId: "beinghuman-blood-pk",
+      storageBucket: "beinghuman-blood-pk.firebasestorage.app",
+      messagingSenderId: "46427863084",
+      appId: "1:46427863084:web:fff219fd6e17fd83e23989"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUser = null;
+    let currentRole = 'donor';
+
+    function showMsg(text, type) {
+      const el = document.getElementById('msgBox');
+      el.textContent = text;
+      el.className = 'msg ' + type;
+      el.style.display = 'block';
+      if (type === 'success') setTimeout(() => el.style.display = 'none', 4000);
+    }
+
+    auth.onAuthStateChanged(async function(user) {
+      if (!user) {
+        window.location.href = 'auth.html';
+        return;
+      }
+
+      currentUser = user;
+
+      try {
+        const doc = await db.collection('users').doc(user.uid).get();
+        if (!doc.exists) {
+          window.location.href = 'auth.html';
+          return;
+        }
+
+        const d = doc.data();
+        currentRole = d.role || 'donor';
+
+        document.getElementById('p_name').value = d.name || '';
+        document.getElementById('p_email').value = d.email || '';
+        document.getElementById('p_city').value = d.city || '';
+        document.getElementById('p_blood').value = d.blood || '';
+        document.getElementById('p_phone').value = d.phone || '';
+
+        const roleEl = document.getElementById('p_role');
+        roleEl.textContent = currentRole;
+        roleEl.className = 'role-display role-' + currentRole;
+
+        document.getElementById('loaderBox').style.display = 'none';
+        document.getElementById('formBox').style.display = 'block';
+
+      } catch (e) {
+        document.getElementById('loaderBox').textContent = '❌ Error: ' + e.message;
+      }
+    });
+
+    window.saveProfile = async function() {
+      const name = document.getElementById('p_name').value.trim();
+      const city = document.getElementById('p_city').value.trim();
+      const blood = document.getElementById('p_blood').value;
+      const phone = document.getElementById('p_phone').value.trim();
+      const btn = document.getElementById('saveBtn');
+
+      if (!name || !city || !blood || !phone) {
+        return showMsg('Sab fields bharna zaroori hai!', 'error');
+      }
+      if (phone.length < 10) {
+        return showMsg('Sahi WhatsApp number daalo (11 digits)', 'error');
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Save ho raha hai...';
+
+      try {
+        // Update users collection
+        await db.collection('users').doc(currentUser.uid).update({
+          name: name,
+          city: city,
+          blood: blood,
+          phone: phone,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Update donors collection (if exists)
+        const donorRef = db.collection('donors').doc(currentUser.uid);
+        const donorSnap = await donorRef.get();
+        if (donorSnap.exists) {
+          await donorRef.update({
+            name: name,
+            city: city,
+            blood: blood,
+            phone: phone
+          });
+        } else {
+          await donorRef.set({
+            name: name,
+            city: city,
+            blood: blood,
+            phone: phone,
+            uid: currentUser.uid,
+            role: currentRole,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            available: true,
+            donations: 0
+          });
+        }
+
+        showMsg('✅ Profile update ho gayi!', 'success');
+
+      } catch (e) {
+        showMsg('❌ Error: ' + e.message, 'error');
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Save Karo';
+    };
+
+    window.goBack = function() {
+      window.location.href = 'auth.html';
+    };
+  });
+</script>
+</body>
+</html>

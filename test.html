@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firebase Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+    .box { background: white; padding: 20px; border-radius: 10px; max-width: 500px; margin: 0 auto; }
+    h1 { color: #c0392b; }
+    .status { padding: 15px; border-radius: 8px; margin: 10px 0; font-weight: bold; }
+    .loading { background: #fff3cd; color: #856404; }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>🩸 Firebase Test</h1>
+    <div id="status" class="status loading">⏳ Firebase connect ho raha hai...</div>
+    <div id="details"></div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script>
+    const statusEl = document.getElementById('status');
+    const detailsEl = document.getElementById('details');
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAp8lKgJuBKpHdXF4pXHr7U3aXwtZUKv_4",
+      authDomain: "beinghuman-blood-pk.firebaseapp.com",
+      projectId: "beinghuman-blood-pk",
+      storageBucket: "beinghuman-blood-pk.firebasestorage.app",
+      messagingSenderId: "46427863084",
+      appId: "1:46427863084:web:fff219fd6e17fd83e23989"
+    };
+
+    try {
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+
+      db.collection("test").add({
+        message: "BeingHuman Blood test",
+        time: new Date().toISOString()
+      })
+      .then(function() {
+        return db.collection("test").get();
+      })
+      .then(function(snapshot) {
+        statusEl.className = "status success";
+        statusEl.textContent = "✅ Firebase CONNECT ho gaya!";
+        detailsEl.innerHTML = "<p><b>Project:</b> " + firebaseConfig.projectId + "</p>" +
+          "<p><b>Test collection mein " + snapshot.size + " document(s) hain</b></p>" +
+          "<p style='color:#666;font-size:14px;'>Ab Firebase console mein Firestore kholo.</p>";
+      })
+      .catch(function(error) {
+        statusEl.className = "status error";
+        statusEl.textContent = "❌ Error aa gaya!";
+        detailsEl.innerHTML = "<p><b>Error:</b> " + error.message + "</p>";
+      });
+    } catch (error) {
+      statusEl.className = "status error";
+      statusEl.textContent = "❌ Setup error!";
+      detailsEl.innerHTML = "<p><b>Error:</b> " + error.message + "</p>";
+    }
+  </script>
+</body>
+</html>
