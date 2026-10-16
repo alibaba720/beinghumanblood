@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /profile.html
+
+Sitemap: https://beinghumanblood.vercel.app/sitemap.xml
