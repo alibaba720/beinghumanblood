@@ -49,7 +49,7 @@
 <div class="container">
 
   <div class="header">
-    <a href="auth.html" class="back">‹</a>
+    <a href="index.html" class="back">‹</a>
     <h1>✏️ Edit Profile</h1>
     <p>Apni details update karo</p>
   </div>
@@ -141,7 +141,7 @@
 
     auth.onAuthStateChanged(async function(user) {
       if (!user) {
-        window.location.href = 'auth.html';
+        window.location.href = 'index.html';
         return;
       }
 
@@ -150,7 +150,7 @@
       try {
         const doc = await db.collection('users').doc(user.uid).get();
         if (!doc.exists) {
-          window.location.href = 'auth.html';
+          window.location.href = 'index.html';
           return;
         }
 
@@ -237,7 +237,7 @@
     };
 
     window.goBack = function() {
-      window.location.href = 'auth.html';
+      window.location.href = 'index.html';
     };
   });
 </script>

@@ -2,58 +2,56 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="google-site-verification" content="OeHvxSU3GiJc2AAEDzh1hrKZBAWgIJf2_cmOMmBJZ_M" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BeingHuman Blood - Ek Qatra, Ek Zindagi</title>
+<title>BeingHuman Blood - Login / Signup</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
-  body { background: linear-gradient(135deg, #8B0000, #5a0000); min-height: 100vh; padding: 15px; }
-  .container { max-width: 500px; margin: 0 auto; background: #FFF8F0; border-radius: 18px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
+  body { background: linear-gradient(135deg, #8B0000, #5a0000); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 15px; }
+  .container { width: 100%; max-width: 440px; background: #FFF8F0; border-radius: 18px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
   
   .header { background: linear-gradient(135deg, #8B0000, #c0392b); padding: 30px 20px 25px; text-align: center; color: white; }
-  .header h1 { font-size: 30px; margin-bottom: 5px; letter-spacing: 1px; }
-  .header .drop { font-size: 40px; display: block; margin-bottom: 5px; }
-  .header p { font-size: 14px; opacity: 0.95; font-style: italic; }
-  .header .count { margin-top: 12px; font-size: 13px; background: rgba(255,255,255,0.2); display: inline-block; padding: 5px 15px; border-radius: 20px; }
+  .header .drop { font-size: 40px; }
+  .header h1 { font-size: 26px; margin-top: 5px; }
+  .header p { font-size: 13px; opacity: 0.95; font-style: italic; margin-top: 5px; }
   
   .tabs { display: flex; background: white; border-bottom: 2px solid #f0e0d0; }
-  .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; color: #888; font-weight: 600; font-size: 15px; transition: all 0.3s; }
+  .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; color: #888; font-weight: 600; font-size: 15px; }
   .tab.active { color: #8B0000; border-bottom: 3px solid #8B0000; margin-bottom: -2px; background: #FFF8F0; }
   
   .body-content { padding: 25px 20px; }
   .section { display: none; }
-  .section.active { display: block; animation: fadeIn 0.4s; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .section.active { display: block; }
   
   label { display: block; margin-bottom: 6px; color: #2C1810; font-weight: 600; font-size: 13px; }
-  input, select { width: 100%; padding: 13px; margin-bottom: 15px; border: 2px solid #ead5c0; border-radius: 10px; font-size: 15px; background: white; transition: all 0.3s; }
-  input:focus, select:focus { outline: none; border-color: #8B0000; background: #fffdfa; }
+  input, select { width: 100%; padding: 13px; margin-bottom: 15px; border: 2px solid #ead5c0; border-radius: 10px; font-size: 15px; background: white; }
+  input:focus, select:focus { outline: none; border-color: #8B0000; }
   
-  button { width: 100%; padding: 15px; background: linear-gradient(135deg, #8B0000, #c0392b); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.3s; letter-spacing: 0.5px; }
+  button { width: 100%; padding: 15px; background: linear-gradient(135deg, #8B0000, #c0392b); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
   button:active { transform: scale(0.98); }
-  button:disabled { opacity: 0.6; cursor: wait; }
+  button:disabled { opacity: 0.6; }
   
-  .success { background: #d4edda; color: #155724; padding: 15px; border-radius: 10px; margin-top: 15px; text-align: center; font-weight: 600; display: none; border-left: 4px solid #27ae60; }
-  .error { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 10px; margin-top: 15px; text-align: center; font-weight: 600; display: none; border-left: 4px solid #c0392b; }
+  .msg { padding: 13px; border-radius: 10px; margin-top: 15px; text-align: center; font-weight: 600; font-size: 14px; display: none; }
+  .success { background: #d4edda; color: #155724; border-left: 4px solid #27ae60; }
+  .error { background: #f8d7da; color: #721c24; border-left: 4px solid #c0392b; }
   
-  .stats-box { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-  .stats-box h3 { color: #8B0000; font-size: 16px; margin-bottom: 15px; }
-  .stats-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0e0d0; font-size: 14px; }
-  .stats-row:last-child { border-bottom: none; }
-  .stats-row b { color: #8B0000; }
+  .welcome-box { display: none; text-align: center; padding: 20px 0; }
+  .welcome-box .avatar { width: 80px; height: 80px; background: linear-gradient(135deg, #8B0000, #c0392b); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 34px; font-weight: bold; margin: 0 auto 15px; }
+  .welcome-box h2 { color: #8B0000; font-size: 22px; margin-bottom: 5px; }
+  .welcome-box .role-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+  .role-owner { background: #FFD700; color: #5a0000; }
+  .role-admin { background: #8B0000; color: white; }
+  .role-moderator { background: #c0392b; color: white; }
+  .role-donor { background: #27ae60; color: white; }
+  .welcome-box .info { font-size: 14px; color: #666; margin-bottom: 8px; }
+  .welcome-box .info b { color: #8B0000; }
+  .welcome-box .btn-row { margin-top: 20px; }
+  .welcome-box .btn-row button { margin-bottom: 10px; }
+  .btn-secondary { background: white !important; color: #8B0000 !important; border: 2px solid #8B0000 !important; }
   
-  .big-stat { text-align: center; padding: 25px; background: linear-gradient(135deg, #FFF8F0, #ffe8d0); border-radius: 12px; margin-bottom: 15px; border: 2px dashed #c0392b; }
-  .big-stat .num { font-size: 42px; font-weight: bold; color: #8B0000; }
-  .big-stat .lbl { font-size: 13px; color: #666; margin-top: 5px; }
+  .footer { text-align: center; padding: 15px; font-size: 11px; color: #999; background: white; border-top: 1px solid #f0e0d0; }
   
-  .how { background: #fff; padding: 20px; border-radius: 12px; margin-top: 15px; }
-  .how h3 { color: #8B0000; margin-bottom: 12px; font-size: 16px; }
-  .how .step { display: flex; gap: 10px; padding: 8px 0; font-size: 14px; color: #444; }
-  .how .step b { color: #8B0000; min-width: 22px; }
-  
-  .footer { text-align: center; padding: 20px; font-size: 12px; color: #999; background: white; border-top: 1px solid #f0e0d0; }
-  .footer .brand { color: #8B0000; font-weight: bold; font-size: 13px; }
-  
-  .loading-spinner { text-align: center; padding: 30px; color: #8B0000; font-size: 14px; }
+  .loader { text-align: center; padding: 30px; color: #8B0000; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -63,235 +61,238 @@
     <span class="drop">🩸</span>
     <h1>BeingHuman Blood</h1>
     <p>Ek qatra, ek zindagi</p>
-    <div class="count" id="headerCount">Loading...</div>
   </div>
 
-  <div class="tabs">
-    <div class="tab active" id="tabRegister" onclick="showTab('register')">Register</div>
-    <div class="tab" id="tabSearch" onclick="showTab('search')">Search</div>
-  </div>
+  <div id="loaderBox" class="loader">⏳ Loading...</div>
 
-  <div class="body-content">
-
-    <div id="register" class="section active">
-      <label>Poora Naam</label>
-      <input type="text" id="name" placeholder="Ahmed Khan">
-
-      <label>City</label>
-      <input type="text" id="city" placeholder="Lahore">
-
-      <label>Blood Group</label>
-      <select id="blood">
-        <option value="">-- Select --</option>
-        <option>A+</option><option>A-</option>
-        <option>B+</option><option>B-</option>
-        <option>AB+</option><option>AB-</option>
-        <option>O+</option><option>O-</option>
-      </select>
-
-      <label>WhatsApp Number</label>
-      <input type="tel" id="phone" placeholder="03xxxxxxxxx">
-
-      <button onclick="registerDonor()" id="regBtn">Register Karo</button>
-      <div id="regSuccess" class="success">Shukriya! Tum register ho gaye.</div>
-      <div id="regError" class="error"></div>
+  <div id="appBox" style="display:none;">
+    <div id="mainTabs" class="tabs">
+      <div class="tab active" id="tabSignup" onclick="showTab('signup')">Sign Up</div>
+      <div class="tab" id="tabLogin" onclick="showTab('login')">Login</div>
     </div>
 
-    <div id="search" class="section">
-      <label>Blood Group</label>
-      <select id="searchBlood">
-        <option value="">-- Select --</option>
-        <option>A+</option><option>A-</option>
-        <option>B+</option><option>B-</option>
-        <option>AB+</option><option>AB-</option>
-        <option>O+</option><option>O-</option>
-      </select>
+    <div class="body-content">
 
-      <label>City</label>
-      <input type="text" id="searchCity" placeholder="Lahore">
+      <div id="signup" class="section active">
+        <label>Poora Naam</label>
+        <input type="text" id="su_name" placeholder="Ahmed Khan">
 
-      <button onclick="searchDonors()" id="searchBtn">Dhoondo</button>
-      <div id="searchResults" style="margin-top:15px;"></div>
+        <label>Email</label>
+        <input type="email" id="su_email" placeholder="ahmed@example.com">
 
-      <div class="how">
-        <h3>Kaise kaam karta hai?</h3>
-        <div class="step"><b>1.</b> Search karo (blood group + city)</div>
-        <div class="step"><b>2.</b> Hum matching donors ko notification bhejenge</div>
-        <div class="step"><b>3.</b> Donor khud raazi ho to uska number milega</div>
-        <div class="step"><b>4.</b> Donor hospital pohnchega — zindagi bachegi</div>
+        <label>Password (6+ characters)</label>
+        <input type="password" id="su_pass" placeholder="••••••••">
+
+        <label>City</label>
+        <input type="text" id="su_city" placeholder="Daska">
+
+        <label>Blood Group</label>
+        <select id="su_blood">
+          <option value="">-- Select --</option>
+          <option>A+</option><option>A-</option>
+          <option>B+</option><option>B-</option>
+          <option>AB+</option><option>AB-</option>
+          <option>O+</option><option>O-</option>
+        </select>
+
+        <label>WhatsApp Number</label>
+        <input type="tel" id="su_phone" placeholder="03xxxxxxxxx">
+
+        <button onclick="signup()" id="su_btn">Account Banao</button>
+        <div id="su_msg" class="msg"></div>
       </div>
-    </div>
 
+      <div id="login" class="section">
+        <label>Email</label>
+        <input type="email" id="li_email" placeholder="ahmed@example.com">
+
+        <label>Password</label>
+        <input type="password" id="li_pass" placeholder="••••••••">
+
+        <button onclick="login()" id="li_btn">Login Karo</button>
+        <div id="li_msg" class="msg"></div>
+      </div>
+
+      <div id="welcome" class="welcome-box">
+        <div class="avatar" id="w_avatar">A</div>
+        <h2 id="w_name">Ahmed Khan</h2>
+        <div class="role-badge" id="w_role">Donor</div>
+        <div class="info">📧 <b id="w_email"></b></div>
+        <div class="info">📍 <b id="w_city"></b> • 🩸 <b id="w_blood"></b></div>
+        <div class="info">📞 <b id="w_phone"></b></div>
+        <div class="btn-row">
+          <button onclick="goToApp()">Main App Kholo</button>
+          <button class="btn-secondary" onclick="logout()">Logout</button>
+        </div>
+      </div>
+
+    </div>
   </div>
 
   <div class="footer">
-    <div class="brand">BeingHuman Blood</div>
-    <div>Ek qatra, ek zindagi</div>
-    <div style="margin-top:5px;">BeingHuman Foundation — Coming Soon</div>
+    BeingHuman Blood • Ek qatra, ek zindagi
   </div>
 
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="firebase/firebase-app-compat.js"></script>
+<script src="firebase/firebase-auth-compat.js"></script>
+<script src="firebase/firebase-firestore-compat.js"></script>
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyAp8lKgJuBKpHdXF4pXHr7U3aXwtZUKv_4",
-    authDomain: "beinghuman-blood-pk.firebaseapp.com",
-    projectId: "beinghuman-blood-pk",
-    storageBucket: "beinghuman-blood-pk.firebasestorage.app",
-    messagingSenderId: "46427863084",
-    appId: "1:46427863084:web:fff219fd6e17fd83e23989"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-
-  function showTab(tab) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
-    document.getElementById(tab).classList.add('active');
-  }
-
-  async function updateCount() {
-    try {
-      const snap = await db.collection('donors').get();
-      document.getElementById('headerCount').textContent = snap.size + ' donors registered';
-    } catch (e) {
-      document.getElementById('headerCount').textContent = 'BeingHuman Blood';
+  function waitForFirebase(callback, tries) {
+    tries = tries || 0;
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      callback();
+    } else if (tries < 40) {
+      setTimeout(function() { waitForFirebase(callback, tries + 1); }, 250);
+    } else {
+      document.getElementById('loaderBox').textContent = '❌ Firebase load nahi hua.';
     }
   }
-  updateCount();
 
-  async function registerDonor() {
-    const name = document.getElementById('name').value.trim();
-    const city = document.getElementById('city').value.trim();
-    const blood = document.getElementById('blood').value;
-    const phone = document.getElementById('phone').value.trim();
-    const btn = document.getElementById('regBtn');
-    const successEl = document.getElementById('regSuccess');
-    const errorEl = document.getElementById('regError');
+  waitForFirebase(function() {
+    const firebaseConfig = {
+      apiKey: "AIzaSyAp8lKgJuBKpHdXF4pXHr7U3aXwtZUKv_4",
+      authDomain: "beinghuman-blood-pk.firebaseapp.com",
+      projectId: "beinghuman-blood-pk",
+      storageBucket: "beinghuman-blood-pk.firebasestorage.app",
+      messagingSenderId: "46427863084",
+      appId: "1:46427863084:web:fff219fd6e17fd83e23989"
+    };
 
-    successEl.style.display = 'none';
-    errorEl.style.display = 'none';
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    if (!name || !city || !blood || !phone) {
-      errorEl.textContent = 'Sab fields bharna zaroori hai!';
-      errorEl.style.display = 'block';
-      return;
+    document.getElementById('loaderBox').style.display = 'none';
+    document.getElementById('appBox').style.display = 'block';
+
+    window.showTab = function(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+      document.getElementById(tab).classList.add('active');
+    };
+
+    function showMsg(id, text, type) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = 'msg ' + type;
+      el.style.display = 'block';
+      if (type === 'success') setTimeout(() => el.style.display = 'none', 4000);
     }
 
-    if (phone.length < 10) {
-      errorEl.textContent = 'Sahi WhatsApp number daalo (11 digits)';
-      errorEl.style.display = 'block';
-      return;
-    }
+    window.signup = async function() {
+      const name = document.getElementById('su_name').value.trim();
+      const email = document.getElementById('su_email').value.trim();
+      const pass = document.getElementById('su_pass').value;
+      const city = document.getElementById('su_city').value.trim();
+      const blood = document.getElementById('su_blood').value;
+      const phone = document.getElementById('su_phone').value.trim();
+      const btn = document.getElementById('su_btn');
 
-    btn.disabled = true;
-    btn.textContent = 'Save ho raha hai...';
-
-    try {
-      const existing = await db.collection('donors').where('phone', '==', phone).get();
-      if (!existing.empty) {
-        errorEl.textContent = 'Ye number pehle se registered hai!';
-        errorEl.style.display = 'block';
-        btn.disabled = false;
-        btn.textContent = 'Register Karo';
-        return;
+      if (!name || !email || !pass || !city || !blood || !phone) {
+        return showMsg('su_msg', 'Sab fields bharna zaroori hai!', 'error');
+      }
+      if (pass.length < 6) {
+        return showMsg('su_msg', 'Password kam se kam 6 characters ka ho', 'error');
       }
 
-      await db.collection('donors').add({
-        name: name,
-        city: city,
-        blood: blood,
-        phone: phone,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        available: true,
-        donations: 0,
-        role: 'donor'
-      });
+      btn.disabled = true; btn.textContent = 'Account ban raha hai...';
 
-      successEl.style.display = 'block';
-      document.getElementById('name').value = '';
-      document.getElementById('city').value = '';
-      document.getElementById('blood').value = '';
-      document.getElementById('phone').value = '';
+      try {
+        const userCred = await auth.createUserWithEmailAndPassword(email, pass);
+        const uid = userCred.user.uid;
 
-      updateCount();
-      setTimeout(() => successEl.style.display = 'none', 4000);
-    } catch (e) {
-      errorEl.textContent = 'Error: ' + e.message;
-      errorEl.style.display = 'block';
-    }
+        const allUsers = await db.collection('users').limit(1).get();
+        const isFirstUser = allUsers.empty;
+        const role = isFirstUser ? 'owner' : 'donor';
 
-    btn.disabled = false;
-    btn.textContent = 'Register Karo';
-  }
+        await db.collection('users').doc(uid).set({
+          name, email, city, blood, phone, role, uid,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          available: true, donations: 0, isProtected: isFirstUser
+        });
 
-  async function searchDonors() {
-    const blood = document.getElementById('searchBlood').value;
-    const city = document.getElementById('searchCity').value.trim();
-    const btn = document.getElementById('searchBtn');
-    const results = document.getElementById('searchResults');
+        await db.collection('donors').doc(uid).set({
+          name, city, blood, phone, uid, role,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          available: true, donations: 0
+        });
 
-    if (!blood || !city) {
-      results.innerHTML = '<div class="error" style="display:block;">Blood group aur city dono daalo!</div>';
-      return;
-    }
+        showMsg('su_msg', isFirstUser ? '🎉 Mubarak! Tum OWNER ban gaye!' : 'Account ban gaya!', 'success');
 
-    btn.disabled = true;
-    btn.textContent = 'Dhoond rahe hain...';
-    results.innerHTML = '<div class="loading-spinner">Matching donors dhoond rahe hain...</div>';
+        ['su_name','su_email','su_pass','su_city','su_blood','su_phone'].forEach(id => document.getElementById(id).value = '');
 
-    try {
-      const snap = await db.collection('donors')
-        .where('blood', '==', blood)
-        .where('city', '==', city)
-        .get();
+      } catch (e) {
+        let msg = e.message;
+        if (msg.includes('email-already-in-use')) msg = 'Ye email pehle se registered hai!';
+        if (msg.includes('invalid-email')) msg = 'Sahi email daalo!';
+        showMsg('su_msg', msg, 'error');
+      }
 
-      const total = snap.size;
-      const available = snap.docs.filter(d => d.data().available !== false).length;
+      btn.disabled = false; btn.textContent = 'Account Banao';
+    };
 
-      if (total === 0) {
-        results.innerHTML = `
-          <div class="big-stat">
-            <div class="num">0</div>
-            <div class="lbl">Is city mein is blood group ke donor nahi</div>
-          </div>
-          <div class="stats-box">
-            <h3>Kya karein?</h3>
-            <div class="stats-row"><span>Aas paas ki city try karo</span></div>
-            <div class="stats-row"><span>Thori der baad dobara dekho</span></div>
-            <div class="stats-row"><span>Apne doston ko register karwao</span></div>
-          </div>
-        `;
+    window.login = async function() {
+      const email = document.getElementById('li_email').value.trim();
+      const pass = document.getElementById('li_pass').value;
+      const btn = document.getElementById('li_btn');
+
+      if (!email || !pass) return showMsg('li_msg', 'Email aur password daalo!', 'error');
+
+      btn.disabled = true; btn.textContent = 'Login ho raha hai...';
+
+      try {
+        await auth.signInWithEmailAndPassword(email, pass);
+      } catch (e) {
+        let msg = e.message;
+        if (msg.includes('user-not-found')) msg = 'Ye email registered nahi hai!';
+        if (msg.includes('wrong-password') || msg.includes('invalid-credential')) msg = 'Email ya password galat hai!';
+        showMsg('li_msg', msg, 'error');
+        btn.disabled = false; btn.textContent = 'Login Karo';
+      }
+    };
+
+    window.goToApp = function() { window.location.href = 'app.html'; };
+
+    window.logout = async function() { await auth.signOut(); location.reload(); };
+
+    auth.onAuthStateChanged(async function(user) {
+      const mainTabs = document.getElementById('mainTabs');
+      const welcome = document.getElementById('welcome');
+
+      if (user) {
+        try {
+          const doc = await db.collection('users').doc(user.uid).get();
+          if (doc.exists) {
+            const d = doc.data();
+            mainTabs.style.display = 'none';
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            welcome.style.display = 'block';
+
+            document.getElementById('w_avatar').textContent = (d.name || 'U').charAt(0).toUpperCase();
+            document.getElementById('w_name').textContent = d.name || 'User';
+            document.getElementById('w_email').textContent = d.email || '';
+            document.getElementById('w_city').textContent = d.city || '';
+            document.getElementById('w_blood').textContent = d.blood || '';
+            document.getElementById('w_phone').textContent = d.phone || '';
+
+            const roleEl = document.getElementById('w_role');
+            roleEl.textContent = d.role || 'donor';
+            roleEl.className = 'role-badge role-' + (d.role || 'donor');
+          }
+        } catch (e) { console.error(e); }
       } else {
-        results.innerHTML = `
-          <div class="big-stat">
-            <div class="num">${available}</div>
-            <div class="lbl">${blood} donors ${city} mein available</div>
-          </div>
-          <div class="stats-box">
-            <h3>Statistics</h3>
-            <div class="stats-row"><span>Total registered</span><b>${total}</b></div>
-            <div class="stats-row"><span>Filhal available</span><b>${available}</b></div>
-            <div class="stats-row"><span>Blood group</span><b>${blood}</b></div>
-            <div class="stats-row"><span>City</span><b>${city}</b></div>
-          </div>
-          <div class="stats-box" style="background:#fff8e1;border-left:4px solid #f39c12;">
-            <h3 style="color:#b9770e;">Privacy Notice</h3>
-            <p style="font-size:13px;color:#666;line-height:1.5;">Donors ke numbers public nahi hain. Jab koi donor madad ke liye raazi hoga, uska number tumhe milega. Ye system donors ki privacy ke liye hai.</p>
-          </div>
-        `;
+        mainTabs.style.display = 'flex';
+        welcome.style.display = 'none';
+        document.getElementById('signup').classList.add('active');
+        document.getElementById('login').classList.remove('active');
+        document.getElementById('tabSignup').classList.add('active');
+        document.getElementById('tabLogin').classList.remove('active');
       }
-    } catch (e) {
-      results.innerHTML = '<div class="error" style="display:block;">Error: ' + e.message + '</div>';
-    }
-
-    btn.disabled = false;
-    btn.textContent = 'Dhoondo';
-  }
+    });
+  });
 </script>
 </body>
 </html>
