@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BeingHuman Blood - Login / Signup</title>
+<meta name="google-site-verification" content="OeHvxSU3GiJc2AAEDzh1hrKZBAWgIJf2_cmOMmBJZ_M" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #8B0000;
+    --primary-light: #c0392b;
+    --accent: #FFD700;
+    --bg: #FFF8F0;
+    --text: #2C1810;
+    --gray: #666;
+    --border: #ead5c0;
+  }
+  body {
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #8B0000, #5a0000);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    color: var(--text);
+  }
+  body.lang-urdu { font-family: 'Noto Nastaliq Urdu', serif; }
+  
+  .container {
+    width: 100%;
+    max-width: 440px;
+    background: var(--bg);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+  }
+  
+  .header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    padding: 28px 20px 22px;
+    text-align: center;
+    color: white;
+  }
+  .header .drop { font-size: 40px; }
+  .header h1 { font-size: 24px; margin-top: 5px; font-weight: 800; letter-spacing: 0.3px; }
+  .header p { font-size: 13px; opacity: 0.95; font-style: italic; margin-top: 4px; }
+  
+  .tabs {
+    display: flex;
+    background: white;
+    border-bottom: 2px solid #f0e0d0;
+  }
+  .tab {
+    flex: 1;
+    padding: 14px;
+    text-align: center;
+    cursor: pointer;
+    color: #888;
+    font-weight: 700;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  .tab.active {
+    color: var(--primary);
+    border-bottom: 3px solid var(--primary);
+    margin-bottom: -2px;
+    background: var(--bg);
+  }
+  
+  .body-content { padding: 22px 20px; }
+  .section { display: none; }
+  .section.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 12px;
+  }
+  input, select {
+    width: 100%;
+    padding: 13px;
+    margin-bottom: 13px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: inherit;
+    background: white;
+    color: var(--text);
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: #fffdfa;
+  }
+  input:disabled { background: #f0e8e0; color: #888; }
+  
+  .optional { font-weight: 400; color: #999; font-size: 11px; }
+  
+  button {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.3px;
+    margin-top: 5px;
+  }
+  button:active { transform: scale(0.98); }
+  button:disabled { opacity: 0.6; cursor: wait; }
+  
+  .msg {
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 13px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 13px;
+    display: none;
+  }
+  .success { background: #d4edda; color: #155724; border-left: 4px solid #27ae60; }
+  .error { background: #f8d7da; color: #721c24; border-left: 4px solid #c0392b; }
+  .info { background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8; }
+  
+  .hint {
+    font-size: 11px;
+    color: #999;
+    margin-top: -8px;
+    margin-bottom: 12px;
+    line-height: 1.4;
+  }
+  
+  /* WELCOME */
+  .welcome-box { display: none; text-align: center; padding: 20px 0; }
+  .welcome-box.show { display: block; }
+  .welcome-box .avatar {
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 34px; font-weight: 800;
+    margin: 0 auto 15px;
+  }
+  .welcome-box h2 { color: var(--primary); font-size: 22px; margin-bottom: 5px; font-weight: 800; }
+  .welcome-box .role-badge {
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .role-owner { background: #FFD700; color: #5a0000; }
+  .role-admin { background: #8B0000; color: white; }
+  .role-moderator { background: #c0392b; color: white; }
+  .role-donor { background: #27ae60; color: white; }
+  .welcome-box .info { font-size: 14px; color: #666; margin-bottom: 7px; }
+  .welcome-box .info b { color: var(--primary); }
+  .welcome-box .btn-row { margin-top: 20px; }
+  .welcome-box .btn-row button { margin-bottom: 10px; }
+  .btn-secondary {
+    background: white !important;
+    color: var(--primary) !important;
+    border: 2px solid var(--primary) !important;
+  }
+  
+  .footer {
+    text-align: center;
+    padding: 15px;
+    font-size: 11px;
+    color: #999;
+    background: white;
+    border-top: 1px solid #f0e0d0;
+  }
+  
+  .loader { text-align: center; padding: 40px 20px; color: var(--primary); font-weight: 600; }
+  
+  .lang-mini {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .header { position: relative; }
+</style>
+</head>
+<body class="lang-en">
+<div class="container">
+
+  <div class="header">
+    <button class="lang-mini" onclick="cycleLang()" title="Change Language">🌐</button>
+    <span class="drop">🩸</span>
+    <h1>BeingHuman Blood</h1>
+    <p>Ek qatra, ek zindagi</p>
+  </div>
+
+  <div id="loaderBox" class="loader">⏳ Loading...</div>
+
+  <div id="appBox" style="display:none;">
+    <div id="mainTabs" class="tabs">
+      <div class="tab active" id="tabSignup" onclick="showTab('signup')">Sign Up</div>
+      <div class="tab" id="tabLogin" onclick="showTab('login')">Login</div>
+    </div>
+
+    <div class="body-content">
+
+      <!-- SIGNUP -->
+      <div id="signup" class="section active">
+        <label>Poora Naam *</label>
+        <input type="text" id="su_name" placeholder="Ali Hassan">
+
+        <label>WhatsApp Number *</label>
+        <input type="tel" id="su_phone" placeholder="03001234567" maxlength="11">
+        <div class="hint">Ye tumhara login aur contact number hoga</div>
+
+        <label>Password (6+ characters) *</label>
+        <input type="password" id="su_pass" placeholder="••••••••">
+        <div class="hint">Yaad rakhna — login ke liye zaruri hai</div>
+
+        <label>City *</label>
+        <input type="text" id="su_city" placeholder="Daska">
+
+        <label>Blood Group *</label>
+        <select id="su_blood">
+          <option value="">-- Select --</option>
+          <option>A+</option><option>A-</option>
+          <option>B+</option><option>B-</option>
+          <option>AB+</option><option>AB-</option>
+          <option>O+</option><option>O-</option>
+        </select>
+
+        <label>Email <span class="optional">(optional)</span></label>
+        <input type="email" id="su_email" placeholder="ali@example.com">
+
+        <button onclick="signup()" id="su_btn">Account Banao</button>
+        <div id="su_msg" class="msg"></div>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="login" class="section">
+        <label>WhatsApp Number</label>
+        <input type="tel" id="li_phone" placeholder="03001234567" maxlength="11">
+
+        <label>Password</label>
+        <input type="password" id="li_pass" placeholder="••••••••">
+
+        <button onclick="login()" id="li_btn">Login Karo</button>
+        <div id="li_msg" class="msg"></div>
+      </div>
+
+      <!-- WELCOME -->
+      <div id="welcome" class="welcome-box">
+        <div class="avatar" id="w_avatar">A</div>
+        <h2 id="w_name">Ali Hassan</h2>
+        <div class="role-badge" id="w_role">Donor</div>
+        <div class="info">📞 <b id="w_phone"></b></div>
+        <div class="info">📍 <b id="w_city"></b> • 🩸 <b id="w_blood"></b></div>
+        <div class="info" id="w_email_row" style="display:none;">📧 <b id="w_email"></b></div>
+        <div class="btn-row">
+          <button onclick="goToHome()">Home Kholo</button>
+          <button class="btn-secondary" onclick="goToProfile()">Edit Profile</button>
+          <button class="btn-secondary" onclick="logout()">Logout</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">
+    BeingHuman Blood • Ek qatra, ek zindagi
+  </div>
+
+</div>
+
+<script src="firebase/firebase-app-compat.js"></script>
+<script src="firebase/firebase-auth-compat.js"></script>
+<script src="firebase/firebase-firestore-compat.js"></script>
+<script>
+// ==========================================
+// TRANSLATIONS
+// ==========================================
+const translations = {
+  en: {
+    signup: "Sign Up", login: "Login",
+    fullName: "Full Name *", whatsapp: "WhatsApp Number *",
+    whatsappHint: "This will be your login and contact number",
+    password: "Password (6+ characters) *",
+    passwordHint: "Remember it — needed for login",
+    city: "City *", bloodGroup: "Blood Group *",
+    email: "Email (optional)", createAccount: "Create Account",
+    loginPhone: "WhatsApp Number", loginPassword: "Password",
+    loginBtn: "Login", welcome: "Welcome",
+    homeBtn: "Open Home", profileBtn: "Edit Profile", logoutBtn: "Logout",
+    loading: "Loading...",
+    fillAll: "Please fill all required fields!",
+    invalidPhone: "Enter a valid 11-digit phone number (03xxxxxxxxx)",
+    invalidPass: "Password must be at least 6 characters",
+    phoneTaken: "This phone number is already registered!",
+    signupSuccess: "Account created successfully!",
+    ownerSuccess: "Congratulations! You are now the OWNER!",
+    loginWrong: "Phone number or password is incorrect",
+    notFound: "This phone number is not registered",
+    emailOptional: "Optional — helps for recovery",
+    signingUp: "Creating account...",
+    loggingIn: "Logging in..."
+  },
+  roman: {
+    signup: "Register", login: "Login",
+    fullName: "Poora Naam *", whatsapp: "WhatsApp Number *",
+    whatsappHint: "Ye tumhara login aur contact number hoga",
+    password: "Password (6+ characters) *",
+    passwordHint: "Yaad rakhna — login ke liye zaruri hai",
+    city: "Shehar *", bloodGroup: "Blood Group *",
+    email: "Email (optional)", createAccount: "Account Banao",
+    loginPhone: "WhatsApp Number", loginPassword: "Password",
+    loginBtn: "Login Karo", welcome: "Khush Aamdeed",
+    homeBtn: "Home Kholo", profileBtn: "Profile Edit", logoutBtn: "Logout",
+    loading: "Load ho raha hai...",
+    fillAll: "Tamam zaruri fields bharein!",
+    invalidPhone: "Sahi 11-digit number daalein (03xxxxxxxxx)",
+    invalidPass: "Password kam se kam 6 characters ka ho",
+    phoneTaken: "Ye number pehle se registered hai!",
+    signupSuccess: "Account ban gaya!",
+    ownerSuccess: "Mubarak! Tum ab OWNER ho!",
+    loginWrong: "Number ya password galat hai",
+    notFound: "Ye number registered nahi hai",
+    emailOptional: "Optional — recovery ke liye behtar",
+    signingUp: "Account ban raha hai...",
+    loggingIn: "Login ho raha hai..."
+  },
+  urdu: {
+    signup: "رجسٹر", login: "لاگ ان",
+    fullName: "پورا نام *", whatsapp: "واٹس ایپ نمبر *",
+    whatsappHint: "یہ آپ کا لاگ ان اور رابطہ نمبر ہوگا",
+    password: "پاس ورڈ (6+ حروف) *",
+    passwordHint: "یاد رکھیں — لاگ ان کے لیے ضروری ہے",
+    city: "شہر *", bloodGroup: "بلڈ گروپ *",
+    email: "ای میل (اختیاری)", createAccount: "اکاؤنٹ بنائیں",
+    loginPhone: "واٹس ایپ نمبر", loginPassword: "پاس ورڈ",
+    loginBtn: "لاگ ان", welcome: "خوش آمدید",
+    homeBtn: "ہوم کھولیں", profileBtn: "پروفائل", logoutBtn: "لاگ آؤٹ",
+    loading: "لوڈ ہو رہا ہے...",
+    fillAll: "تمام ضروری خانے بھریں!",
+    invalidPhone: "درست 11 ہندسوں کا نمبر دیں",
+    invalidPass: "پاس ورڈ کم از کم 6 حروف",
+    phoneTaken: "یہ نمبر پہلے سے رجسٹرڈ ہے!",
+    signupSuccess: "اکاؤنٹ بن گیا!",
+    ownerSuccess: "مبارک! آپ اب OWNER ہیں!",
+    loginWrong: "نمبر یا پاس ورڈ غلط ہے",
+    notFound: "یہ نمبر رجسٹرڈ نہیں ہے",
+    emailOptional: "اختیاری",
+    signingUp: "اکاؤنٹ بن رہا ہے...",
+    loggingIn: "لاگ ان ہو رہا ہے..."
+  }
+};
+
+let currentLang = localStorage.getItem('bh_lang') || 'en';
+
+function applyLang() {
+  const t = translations[currentLang];
+  document.body.className = 'lang-' + (currentLang === 'urdu' ? 'urdu' : 'en');
+  document.querySelectorAll('[data-key]').forEach(el => {
+    const k = el.getAttribute('data-key');
+    if (t[k]) el.textContent = t[k];
+  });
+}
+
+function cycleLang() {
+  const order = ['en', 'roman', 'urdu'];
+  const idx = order.indexOf(currentLang);
+  currentLang = order[(idx + 1) % order.length];
+  localStorage.setItem('bh_lang', currentLang);
+  setLangText();
+}
+
+function setLangText() {
+  const t = translations[currentLang];
+  document.getElementById('tabSignup').textContent = t.signup;
+  document.getElementById('tabLogin').textContent = t.login;
+  document.querySelector('label[for="su_name"], #signup label:nth-of-type(1)');
+  
+  // Update all labels and text
+  const labels = document.querySelectorAll('#signup label');
+  if (labels[0]) labels[0].innerHTML = t.fullName;
+  if (labels[1]) labels[1].innerHTML = t.whatsapp;
+  if (labels[2]) labels[2].innerHTML = t.password;
+  if (labels[3]) labels[3].innerHTML = t.city;
+  if (labels[4]) labels[4].innerHTML = t.bloodGroup;
+  if (labels[5]) labels[5].innerHTML = t.email;
+  
+  document.getElementById('su_btn').textContent = t.createAccount;
+  document.getElementById('li_btn').textContent = t.loginBtn;
+  
+  const loginLabels = document.querySelectorAll('#login label');
+  if (loginLabels[0]) loginLabels[0].textContent = t.loginPhone;
+  if (loginLabels[1]) loginLabels[1].textContent = t.loginPassword;
+}
+
+// ==========================================
+// HELPERS
+// ==========================================
+function normalizePhone(p) {
+  p = (p || '').replace(/\D/g, '');
+  if (p.startsWith('92') && p.length === 12) p = '0' + p.substring(2);
+  if (p.length === 10 && p.startsWith('3')) p = '0' + p;
+  return p;
+}
+
+function phoneToEmail(phone) {
+  return phone + '@beinghumanblood.app';
+}
+
+function showMsg(id, text, type) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'msg ' + type;
+  el.style.display = 'block';
+  if (type === 'success') setTimeout(() => el.style.display = 'none', 5000);
+}
+
+function showTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+  document.getElementById(tab).classList.add('active');
+}
+
+// ==========================================
+// FIREBASE
+// ==========================================
+function waitForFirebase(cb, tries) {
+  tries = tries || 0;
+  if (typeof firebase !== 'undefined' && firebase.auth) return cb();
+  if (tries < 40) return setTimeout(() => waitForFirebase(cb, tries + 1), 250);
+  document.getElementById('loaderBox').textContent = '❌ Firebase load nahi hua.';
+}
+
+waitForFirebase(function() {
+  const firebaseConfig = {
+    apiKey: "AIzaSyAp8lKgJuBKpHdXF4pXHr7U3aXwtZUKv_4",
+    authDomain: "beinghuman-blood-pk.firebaseapp.com",
+    projectId: "beinghuman-blood-pk",
+    storageBucket: "beinghuman-blood-pk.firebasestorage.app",
+    messagingSenderId: "46427863084",
+    appId: "1:46427863084:web:fff219fd6e17fd83e23989"
+  };
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  document.getElementById('loaderBox').style.display = 'none';
+  document.getElementById('appBox').style.display = 'block';
+
+  // ==========================================
+  // SIGNUP
+  // ==========================================
+  window.signup = async function() {
+    const name = document.getElementById('su_name').value.trim();
+    const phoneRaw = document.getElementById('su_phone').value.trim();
+    const pass = document.getElementById('su_pass').value;
+    const city = document.getElementById('su_city').value.trim().toLowerCase();
+    const blood = document.getElementById('su_blood').value;
+    const emailOpt = document.getElementById('su_email').value.trim();
+    const t = translations[currentLang];
+    const btn = document.getElementById('su_btn');
+
+    if (!name || !phoneRaw || !pass || !city || !blood) {
+      return showMsg('su_msg', t.fillAll, 'error');
+    }
+
+    const phone = normalizePhone(phoneRaw);
+    if (phone.length !== 11 || !phone.startsWith('03')) {
+      return showMsg('su_msg', t.invalidPhone, 'error');
+    }
+    if (pass.length < 6) {
+      return showMsg('su_msg', t.invalidPass, 'error');
+    }
+
+    btn.disabled = true;
+    btn.textContent = t.signingUp;
+
+    try {
+      // Check if phone already registered
+      const existing = await db.collection('users').where('phone', '==', phone).limit(1).get();
+      if (!existing.empty) {
+        showMsg('su_msg', t.phoneTaken, 'error');
+        btn.disabled = false;
+        btn.textContent = t.createAccount;
+        return;
+      }
+
+      // Create auth user with fake email
+      const fakeEmail = phoneToEmail(phone);
+      const userCred = await auth.createUserWithEmailAndPassword(fakeEmail, pass);
+      const uid = userCred.user.uid;
+
+      // Check if first user → owner
+      const allUsers = await db.collection('users').limit(1).get();
+      const isFirst = allUsers.empty;
+      const role = isFirst ? 'owner' : 'donor';
+
+      // Save user doc
+      await db.collection('users').doc(uid).set({
+        name: name,
+        phone: phone,
+        email: emailOpt || '',
+        city: city,
+        blood: blood,
+        role: role,
+        uid: uid,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        available: true,
+        donations: 0,
+        isProtected: isFirst
+      });
+
+      // Save donor doc for search
+      await db.collection('donors').doc(uid).set({
+        name: name,
+        phone: phone,
+        city: city,
+        blood: blood,
+        role: role,
+        uid: uid,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        available: true,
+        donations: 0
+      });
+
+      showMsg('su_msg', isFirst ? t.ownerSuccess : t.signupSuccess, 'success');
+
+      // Clear form
+      ['su_name','su_phone','su_pass','su_city','su_blood','su_email'].forEach(id => document.getElementById(id).value = '');
+
+    } catch (e) {
+      let msg = e.message;
+      if (msg.includes('email-already-in-use')) msg = t.phoneTaken;
+      showMsg('su_msg', msg, 'error');
+    }
+
+    btn.disabled = false;
+    btn.textContent = t.createAccount;
+  };
+
+  // ==========================================
+  // LOGIN
+  // ==========================================
+  window.login = async function() {
+    const phoneRaw = document.getElementById('li_phone').value.trim();
+    const pass = document.getElementById('li_pass').value;
+    const t = translations[currentLang];
+    const btn = document.getElementById('li_btn');
+
+    if (!phoneRaw || !pass) {
+      return showMsg('li_msg', t.fillAll, 'error');
+    }
+
+    const phone = normalizePhone(phoneRaw);
+    if (phone.length !== 11) {
+      return showMsg('li_msg', t.invalidPhone, 'error');
+    }
+
+    btn.disabled = true;
+    btn.textContent = t.loggingIn;
+
+    try {
+      const fakeEmail = phoneToEmail(phone);
+      await auth.signInWithEmailAndPassword(fakeEmail, pass);
+      // onAuthStateChanged handles the rest
+    } catch (e) {
+      let msg = e.message;
+      if (msg.includes('user-not-found')) msg = t.notFound;
+      else if (msg.includes('wrong-password') || msg.includes('invalid-credential')) msg = t.loginWrong;
+      showMsg('li_msg', msg, 'error');
+      btn.disabled = false;
+      btn.textContent = t.loginBtn;
+    }
+  };
+
+  // ==========================================
+  // AUTH STATE
+  // ==========================================
+  auth.onAuthStateChanged(async function(user) {
+    const mainTabs = document.getElementById('mainTabs');
+    const welcome = document.getElementById('welcome');
+
+    if (user) {
+      try {
+        const doc = await db.collection('users').doc(user.uid).get();
+        if (doc.exists) {
+          const d = doc.data();
+          mainTabs.style.display = 'none';
+          document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+          welcome.classList.add('show');
+
+          document.getElementById('w_avatar').textContent = (d.name || 'U').charAt(0).toUpperCase();
+          document.getElementById('w_name').textContent = d.name || 'User';
+          document.getElementById('w_phone').textContent = d.phone || '';
+          document.getElementById('w_city').textContent = d.city || '';
+          document.getElementById('w_blood').textContent = d.blood || '';
+
+          if (d.email) {
+            document.getElementById('w_email').textContent = d.email;
+            document.getElementById('w_email_row').style.display = 'block';
+          } else {
+            document.getElementById('w_email_row').style.display = 'none';
+          }
+
+          const roleEl = document.getElementById('w_role');
+          roleEl.textContent = (d.role || 'donor').toUpperCase();
+          roleEl.className = 'role-badge role-' + (d.role || 'donor');
+        }
+      } catch (e) { console.error(e); }
+    } else {
+      mainTabs.style.display = 'flex';
+      welcome.classList.remove('show');
+      document.getElementById('signup').classList.add('active');
+      document.getElementById('login').classList.remove('active');
+      document.getElementById('tabSignup').classList.add('active');
+      document.getElementById('tabLogin').classList.remove('active');
+    }
+  });
+
+  window.goToHome = function() { window.location.href = 'index.html'; };
+  window.goToProfile = function() { window.location.href = 'profile.html'; };
+  window.logout = async function() {
+    await auth.signOut();
+    location.reload();
+  };
+
+  // Init language
+  setLangText();
+});
+</script>
+</body>
+</html>

@@ -3,292 +3,799 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BeingHuman Blood - Login / Signup</title>
-<meta name="google-site-verification" content="OeHvxSU3GiJc2AAEDzh1hrKZBAWgIJf2_cmOMmBJZ_M" />
+<title>BeingHuman Blood - Ek Qatra, Ek Zindagi</title>
+<meta name="description" content="BeingHuman Blood - Pakistan's free blood donor network. Find matching blood donors in your city within minutes.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;600&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  
   :root {
     --primary: #8B0000;
     --primary-light: #c0392b;
     --accent: #FFD700;
     --bg: #FFF8F0;
+    --bg-alt: #fdf4ea;
     --text: #2C1810;
     --gray: #666;
     --border: #ead5c0;
   }
+  
   body {
     font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-    background: linear-gradient(135deg, #8B0000, #5a0000);
+    background: var(--bg);
+    color: var(--text);
     min-height: 100vh;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+  
+  body.lang-urdu { font-family: 'Noto Nastaliq Urdu', serif; }
+  body.lang-urdu .header-inner { flex-direction: row-reverse; }
+  
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+  
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .logo { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; }
+  .logo .drop { font-size: 28px; }
+  .logo-text { font-size: 18px; font-weight: 800; letter-spacing: 0.3px; line-height: 1.1; }
+  .logo-sub { font-size: 10px; opacity: 0.9; font-style: italic; }
+  
+  .header-actions { display: flex; align-items: center; gap: 8px; }
+  
+  .icon-btn {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 15px;
-    color: var(--text);
+    transition: background 0.2s;
   }
-  body.lang-urdu { font-family: 'Noto Nastaliq Urdu', serif; }
+  .icon-btn:active { background: rgba(255,255,255,0.3); }
   
-  .container {
-    width: 100%;
-    max-width: 440px;
-    background: var(--bg);
-    border-radius: 18px;
-    overflow: hidden;
-    box-shadow: 0 15px 50px rgba(0,0,0,0.5);
-  }
-  
-  .header {
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
-    padding: 28px 20px 22px;
-    text-align: center;
-    color: white;
-  }
-  .header .drop { font-size: 40px; }
-  .header h1 { font-size: 24px; margin-top: 5px; font-weight: 800; letter-spacing: 0.3px; }
-  .header p { font-size: 13px; opacity: 0.95; font-style: italic; margin-top: 4px; }
-  
-  .tabs {
-    display: flex;
-    background: white;
-    border-bottom: 2px solid #f0e0d0;
-  }
-  .tab {
-    flex: 1;
-    padding: 14px;
-    text-align: center;
-    cursor: pointer;
-    color: #888;
-    font-weight: 700;
-    font-size: 14px;
-    transition: all 0.2s;
-  }
-  .tab.active {
-    color: var(--primary);
-    border-bottom: 3px solid var(--primary);
-    margin-bottom: -2px;
-    background: var(--bg);
-  }
-  
-  .body-content { padding: 22px 20px; }
-  .section { display: none; }
-  .section.active { display: block; animation: fadeIn 0.3s; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  
-  label {
-    display: block;
-    margin-bottom: 5px;
-    color: var(--text);
-    font-weight: 600;
-    font-size: 12px;
-  }
-  input, select {
-    width: 100%;
-    padding: 13px;
-    margin-bottom: 13px;
-    border: 2px solid var(--border);
-    border-radius: 10px;
-    font-size: 15px;
-    font-family: inherit;
-    background: white;
-    color: var(--text);
-  }
-  input:focus, select:focus {
-    outline: none;
-    border-color: var(--primary);
-    background: #fffdfa;
-  }
-  input:disabled { background: #f0e8e0; color: #888; }
-  
-  .optional { font-weight: 400; color: #999; font-size: 11px; }
-  
-  button {
-    width: 100%;
-    padding: 15px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
-    color: white;
+  .user-btn {
+    background: rgba(255,255,255,0.15);
     border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    letter-spacing: 0.3px;
-    margin-top: 5px;
-  }
-  button:active { transform: scale(0.98); }
-  button:disabled { opacity: 0.6; cursor: wait; }
-  
-  .msg {
-    padding: 12px;
-    border-radius: 10px;
-    margin-top: 13px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 13px;
-    display: none;
-  }
-  .success { background: #d4edda; color: #155724; border-left: 4px solid #27ae60; }
-  .error { background: #f8d7da; color: #721c24; border-left: 4px solid #c0392b; }
-  .info { background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8; }
-  
-  .hint {
-    font-size: 11px;
-    color: #999;
-    margin-top: -8px;
-    margin-bottom: 12px;
-    line-height: 1.4;
-  }
-  
-  /* WELCOME */
-  .welcome-box { display: none; text-align: center; padding: 20px 0; }
-  .welcome-box.show { display: block; }
-  .welcome-box .avatar {
-    width: 80px; height: 80px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    color: white; font-size: 34px; font-weight: 800;
-    margin: 0 auto 15px;
-  }
-  .welcome-box h2 { color: var(--primary); font-size: 22px; margin-bottom: 5px; font-weight: 800; }
-  .welcome-box .role-badge {
-    display: inline-block;
-    padding: 5px 15px;
+    color: white;
+    padding: 0 14px;
+    height: 38px;
     border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .user-btn:active { background: rgba(255,255,255,0.3); }
+  
+  /* LANGUAGE MENU */
+  .lang-menu {
+    position: fixed;
+    top: 62px; right: 18px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    overflow: hidden;
+    display: none;
+    z-index: 200;
+    min-width: 190px;
+  }
+  .lang-menu.show { display: block; animation: fadeDown 0.2s; }
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  
+  .lang-menu-title {
+    padding: 10px 15px;
     font-size: 11px;
-    font-weight: 800;
-    margin-bottom: 15px;
+    font-weight: 700;
+    color: var(--gray);
     text-transform: uppercase;
     letter-spacing: 1px;
-  }
-  .role-owner { background: #FFD700; color: #5a0000; }
-  .role-admin { background: #8B0000; color: white; }
-  .role-moderator { background: #c0392b; color: white; }
-  .role-donor { background: #27ae60; color: white; }
-  .welcome-box .info { font-size: 14px; color: #666; margin-bottom: 7px; }
-  .welcome-box .info b { color: var(--primary); }
-  .welcome-box .btn-row { margin-top: 20px; }
-  .welcome-box .btn-row button { margin-bottom: 10px; }
-  .btn-secondary {
-    background: white !important;
-    color: var(--primary) !important;
-    border: 2px solid var(--primary) !important;
+    background: #f8f4f0;
   }
   
-  .footer {
+  .lang-option {
+    padding: 14px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0e8e0;
+    font-size: 15px;
+  }
+  .lang-option:last-child { border-bottom: none; }
+  .lang-option.active { background: #fff5e0; font-weight: 700; }
+  .lang-option .flag { font-size: 20px; }
+  
+  /* HERO */
+  .hero {
+    background: linear-gradient(180deg, #8B0000 0%, #6b0000 100%);
+    color: white;
+    padding: 50px 20px 70px;
     text-align: center;
-    padding: 15px;
-    font-size: 11px;
-    color: #999;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; right: -20%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(255,215,0,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero-content { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
+  .hero-brand { font-size: 34px; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .hero-tagline { font-size: 16px; font-style: italic; opacity: 0.95; margin-bottom: 32px; }
+  
+  .search-box {
     background: white;
-    border-top: 1px solid #f0e0d0;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    text-align: left;
   }
   
-  .loader { text-align: center; padding: 40px 20px; color: var(--primary); font-weight: 600; }
+  .search-row { display: flex; gap: 10px; margin-bottom: 10px; }
   
-  .lang-mini {
+  .search-box select,
+  .search-box input {
+    width: 100%;
+    padding: 13px 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #fdfbf8;
+    color: var(--text);
+  }
+  .search-box select:focus,
+  .search-box input:focus { outline: none; border-color: var(--primary); background: white; }
+  
+  .search-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .search-btn:active { transform: scale(0.98); }
+  
+  /* QS */
+.qs{position:relative;overflow:hidden;height:180px;max-width:1100px;margin:40px auto 0;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.15)}
+.qs-track{display:flex;height:100%;transition:transform 0.6s ease}
+.qs-slide{min-width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:25px;text-align:center}
+.qs-slide p{font-size:18px;font-weight:600;line-height:1.7;max-width:850px;margin:0;font-family:'Noto Nastaliq Urdu',serif;direction:rtl}
+.qs-slide .hl{font-size:20px;font-weight:800}
+.qs-dots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:5}
+.qs-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.4);cursor:pointer;transition:all 0.3s}
+.qs-dot.active{background:white;width:24px;border-radius:5px}
+.qs-1{background:linear-gradient(135deg,#8B0000,#4a0000)}.qs-1 p{color:#FFD700}.qs-1 .hl{color:#fff}
+.qs-2{background:linear-gradient(135deg,#0d5c3f,#052c1d)}.qs-2 p{color:#fff}.qs-2 .hl{color:#FFD700}
+.qs-3{background:linear-gradient(135deg,#1a3a6e,#0a1f3d)}.qs-3 p{color:#e8f4ff}.qs-3 .hl{color:#7ec8ff}
+.qs-4{background:linear-gradient(135deg,#4a1a5c,#26102e)}.qs-4 p{color:#ffe8f4}.qs-4 .hl{color:#FFD700}
+@media(max-width:700px){.qs{height:200px;margin:25px 15px 0}.qs-slide p{font-size:15px}.qs-slide .hl{font-size:17px}}
+
+/* IMPACT NUMBERS */
+  .impact {
+    max-width: 1100px;
+    margin: -40px auto 0;
+    padding: 0 18px;
+    position: relative;
+    z-index: 10;
+  }
+  
+  .impact-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    background: white;
+    border-radius: 16px;
+    padding: 25px 15px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  }
+  
+  .impact-item { text-align: center; padding: 5px; border-right: 1px solid #f0e8e0; }
+  .impact-item:last-child { border-right: none; }
+  .impact-num {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--primary);
+    display: block;
+    line-height: 1.1;
+  }
+  .impact-lbl {
+    font-size: 10px;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+    font-weight: 600;
+  }
+  
+  /* SECTION */
+  .section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 45px 18px 10px;
+  }
+  
+  .section-head { text-align: center; margin-bottom: 30px; }
+  .section-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+  .section-sub {
+    font-size: 14px;
+    color: var(--gray);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  /* MISSION / VISION */
+  .mv-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+  
+  .mv-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px 22px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+    border-top: 4px solid var(--primary);
+    position: relative;
+  }
+  .mv-card.vision { border-top-color: var(--accent); }
+  .mv-icon { font-size: 32px; margin-bottom: 12px; }
+  .mv-title { font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 10px; }
+  .mv-text { font-size: 14px; color: #555; line-height: 1.7; }
+  
+  /* FOUNDER */
+  .founder {
+    background: white;
+    border-radius: 16px;
+    padding: 30px 25px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  .founder-avatar {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 28px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .founder-content { flex: 1; }
+  .founder-name { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 3px; }
+  .founder-role { font-size: 12px; color: var(--gray); margin-bottom: 12px; }
+  .founder-msg { font-size: 14px; color: #555; line-height: 1.7; font-style: italic; }
+  
+  /* INSPIRATION */
+.insp-box {
+  background: linear-gradient(135deg, #fffdfa, #fdf4ea);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  padding: 30px 25px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+  margin-top: 10px;
+}
+.insp-icon { font-size: 40px; margin-bottom: 15px; }
+.insp-text {
+  font-size: 15px; color: #4a3b32; line-height: 1.8;
+  margin-bottom: 15px; font-weight: 500;
+}
+.insp-text:last-child { margin-bottom: 0; }
+body.lang-urdu .insp-text { font-size: 17px; line-height: 2.4; text-align: right; }
+
+/* HOW IT WORKS */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+  
+  .step-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px 18px;
+    text-align: center;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+    position: relative;
+  }
+  .step-num {
+    width: 36px; height: 36px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 16px;
+    margin: 0 auto 12px;
+  }
+  .step-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .step-text { font-size: 13px; color: var(--gray); line-height: 1.5; }
+  
+  /* POSTS */
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+  
+  .post-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .post-card:active { transform: scale(0.98); }
+  .post-img {
+    height: 140px;
+    background: linear-gradient(135deg, #f5e0d0, #ead5c0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+    position: relative;
+  }
+  .post-img.has-img {
+    background-size: cover;
+    background-position: center;
+  }
+  .post-body { padding: 15px; }
+  .post-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .post-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; line-height: 1.35; }
+  .post-text { font-size: 13px; color: var(--gray); line-height: 1.5; }
+  
+  .empty-posts {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--gray);
+    font-size: 14px;
+    background: white;
+    border-radius: 16px;
+    border: 2px dashed var(--border);
+  }
+  
+  /* CTA */
+  .cta {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    border-radius: 20px;
+    padding: 40px 25px;
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta::before {
+    content: '🩸';
+    position: absolute;
+    font-size: 200px;
+    opacity: 0.05;
+    top: -50px; right: -40px;
+  }
+  .cta h2 { font-size: 24px; font-weight: 800; margin-bottom: 10px; position: relative; }
+  .cta p { font-size: 14px; opacity: 0.95; margin-bottom: 22px; position: relative; }
+  .cta-btn {
+    background: white;
+    color: var(--primary);
+    border: none;
+    padding: 14px 32px;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    position: relative;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  }
+  .cta-btn:active { transform: scale(0.97); }
+  
+  /* LEGAL NOTICE */
+  .legal {
+    background: #fff8e1;
+    border-left: 5px solid #f39c12;
+    border-radius: 12px;
+    padding: 22px;
+    margin-top: 20px;
+  }
+  .legal-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #b9770e;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .legal-text {
+    font-size: 13px;
+    color: #5d4e37;
+    line-height: 1.85;
+    margin-bottom: 12px;
+  }
+  .legal-text:last-child { margin-bottom: 0; }
+  .legal-text strong { color: #8B0000; }
+  
+  body.lang-urdu .legal-text { font-size: 15px; line-height: 2.4; text-align: right; }
+  
+  /* FOOTER */
+  .footer {
+    background: #2C1810;
+    color: #c9b8a8;
+    padding: 40px 20px 25px;
+    margin-top: 50px;
+    text-align: center;
+  }
+  .footer-brand { font-size: 20px; font-weight: 800; color: white; margin-bottom: 4px; }
+  .footer-tagline { font-size: 13px; font-style: italic; opacity: 0.8; margin-bottom: 22px; }
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+  }
+  .footer-links a {
+    color: #e0d5c8;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .footer-links a:hover { color: var(--accent); }
+  .footer-note {
+    font-size: 11px;
+    opacity: 0.6;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  /* RESULTS */
+  .results-box {
+    margin-top: 15px;
+    padding: 15px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    display: none;
+  }
+  .results-box.show { display: block; }
+  .results-box .big {
+    text-align: center;
+    padding: 18px;
+    background: #fff5e0;
+    border-radius: 10px;
+    border: 2px dashed var(--primary);
+  }
+  .results-box .big .num { font-size: 40px; font-weight: 800; color: var(--primary); line-height: 1; }
+  .results-box .big .lbl { font-size: 13px; color: var(--gray); margin-top: 6px; }
+  .results-box .empty { text-align: center; padding: 20px; color: var(--gray); font-size: 14px; }
+  
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.show { display: flex; animation: fadeIn 0.2s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  
+  .modal {
+    background: white;
+    border-radius: 18px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 25px;
+    position: relative;
+  }
+  .modal-close {
     position: absolute;
     top: 12px; right: 12px;
-    background: rgba(255,255,255,0.2);
+    background: #f0e8e0;
     border: none;
-    color: white;
     width: 34px; height: 34px;
     border-radius: 50%;
-    font-size: 16px;
+    font-size: 18px;
     cursor: pointer;
+    color: var(--gray);
   }
-  .header { position: relative; }
+  .modal h2 { font-size: 20px; color: var(--primary); margin-bottom: 12px; }
+  .modal p { font-size: 14px; color: #555; line-height: 1.7; margin-bottom: 10px; }
+  
+  /* RESPONSIVE */
+  @media (max-width: 700px) {
+    .impact-grid { grid-template-columns: repeat(2, 1fr); padding: 20px 15px; }
+    .impact-item { border-right: none; padding: 10px 5px; }
+    .impact-item:nth-child(odd) { border-right: 1px solid #f0e8e0; }
+    .impact-item:nth-child(1), .impact-item:nth-child(2) { border-bottom: 1px solid #f0e8e0; margin-bottom: 5px; }
+    
+    .mv-grid, .steps-grid, .posts-grid { grid-template-columns: 1fr; }
+    
+    .founder { flex-direction: column; text-align: center; }
+    .founder-avatar { margin: 0 auto; }
+    
+    .hero-brand { font-size: 26px; }
+    .section-title { font-size: 22px; }
+    .cta h2 { font-size: 20px; }
+  }
 </style>
 </head>
 <body class="lang-en">
-<div class="container">
 
-  <div class="header">
-    <button class="lang-mini" onclick="cycleLang()" title="Change Language">🌐</button>
-    <span class="drop">🩸</span>
-    <h1>BeingHuman Blood</h1>
-    <p>Ek qatra, ek zindagi</p>
-  </div>
-
-  <div id="loaderBox" class="loader">⏳ Loading...</div>
-
-  <div id="appBox" style="display:none;">
-    <div id="mainTabs" class="tabs">
-      <div class="tab active" id="tabSignup" onclick="showTab('signup')">Sign Up</div>
-      <div class="tab" id="tabLogin" onclick="showTab('login')">Login</div>
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <a href="home.html" class="logo">
+      <span class="drop">🩸</span>
+      <div>
+        <div class="logo-text">BeingHuman Blood</div>
+        <span class="logo-sub">Ek qatra, ek zindagi</span>
+      </div>
+    </a>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="toggleLangMenu()" title="Language">🌐</button>
+      <button class="user-btn" onclick="goToProfile()">👤 <span id="userName">User</span></button>
     </div>
+  </div>
+</header>
 
-    <div class="body-content">
+<!-- LANGUAGE MENU -->
+<div class="lang-menu" id="langMenu">
+  <div class="lang-menu-title" data-i18n="selectLanguage">Language</div>
+  <div class="lang-option" data-lang="en" onclick="setLang('en')">
+    <span class="flag">🇬🇧</span> English
+  </div>
+  <div class="lang-option" data-lang="roman" onclick="setLang('roman')">
+    <span class="flag">📝</span> Roman Urdu
+  </div>
+  <div class="lang-option" data-lang="urdu" onclick="setLang('urdu')">
+    <span class="flag">🇵🇰</span> اردو
+  </div>
+</div>
 
-      <!-- SIGNUP -->
-      <div id="signup" class="section active">
-        <label>Poora Naam *</label>
-        <input type="text" id="su_name" placeholder="Ali Hassan">
-
-        <label>WhatsApp Number *</label>
-        <input type="tel" id="su_phone" placeholder="03001234567" maxlength="11">
-        <div class="hint">Ye tumhara login aur contact number hoga</div>
-
-        <label>Password (6+ characters) *</label>
-        <input type="password" id="su_pass" placeholder="••••••••">
-        <div class="hint">Yaad rakhna — login ke liye zaruri hai</div>
-
-        <label>City *</label>
-        <input type="text" id="su_city" placeholder="Daska">
-
-        <label>Blood Group *</label>
-        <select id="su_blood">
-          <option value="">-- Select --</option>
-          <option>A+</option><option>A-</option>
-          <option>B+</option><option>B-</option>
-          <option>AB+</option><option>AB-</option>
-          <option>O+</option><option>O-</option>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-brand">BeingHuman Blood</div>
+    <div class="hero-tagline">Ek qatra, ek zindagi</div>
+    
+    <div class="search-box">
+      <div class="search-row">
+        <select id="searchBlood">
+          <option value="" data-i18n="selectBloodGroup">-- Blood Group --</option>
+          <option value="A+">A+</option><option value="A-">A-</option>
+          <option value="B+">B+</option><option value="B-">B-</option>
+          <option value="AB+">AB+</option><option value="AB-">AB-</option>
+          <option value="O+">O+</option><option value="O-">O-</option>
         </select>
-
-        <label>Email <span class="optional">(optional)</span></label>
-        <input type="email" id="su_email" placeholder="ali@example.com">
-
-        <button onclick="signup()" id="su_btn">Account Banao</button>
-        <div id="su_msg" class="msg"></div>
+        <input type="text" id="searchCity" placeholder="City" data-i18n-placeholder="cityPlaceholder">
       </div>
-
-      <!-- LOGIN -->
-      <div id="login" class="section">
-        <label>WhatsApp Number</label>
-        <input type="tel" id="li_phone" placeholder="03001234567" maxlength="11">
-
-        <label>Password</label>
-        <input type="password" id="li_pass" placeholder="••••••••">
-
-        <button onclick="login()" id="li_btn">Login Karo</button>
-        <div id="li_msg" class="msg"></div>
-      </div>
-
-      <!-- WELCOME -->
-      <div id="welcome" class="welcome-box">
-        <div class="avatar" id="w_avatar">A</div>
-        <h2 id="w_name">Ali Hassan</h2>
-        <div class="role-badge" id="w_role">Donor</div>
-        <div class="info">📞 <b id="w_phone"></b></div>
-        <div class="info">📍 <b id="w_city"></b> • 🩸 <b id="w_blood"></b></div>
-        <div class="info" id="w_email_row" style="display:none;">📧 <b id="w_email"></b></div>
-        <div class="btn-row">
-          <button onclick="goToHome()">Home Kholo</button>
-          <button class="btn-secondary" onclick="goToProfile()">Edit Profile</button>
-          <button class="btn-secondary" onclick="logout()">Logout</button>
-        </div>
-      </div>
-
+      <button class="search-btn" onclick="searchDonors()" data-i18n="searchBtn">🩸 SEARCH DONORS</button>
+      <div class="results-box" id="resultsBox"></div>
     </div>
   </div>
+</section>
 
-  <div class="footer">
-    BeingHuman Blood • Ek qatra, ek zindagi
+<section class="qs"><div class="qs-track" id="qsTrack"></div><div class="qs-dots" id="qsDots"></div></section>
+
+<!-- IMPACT NUMBERS -->
+<section class="impact">
+  <div class="impact-grid">
+    <div class="impact-item">
+      <span class="impact-num" id="statDonors">0</span>
+      <span class="impact-lbl" data-i18n="donorsLabel">Donors</span>
+    </div>
+    <div class="impact-item">
+      <span class="impact-num" id="statCities">0</span>
+      <span class="impact-lbl" data-i18n="citiesLabel">Cities</span>
+    </div>
+    <div class="impact-item">
+      <span class="impact-num" id="statLives">0</span>
+      <span class="impact-lbl" data-i18n="livesLabel">Lives Saved</span>
+    </div>
+    <div class="impact-item">
+      <span class="impact-num" id="statPosts">0</span>
+      <span class="impact-lbl" data-i18n="postsLabel">Stories</span>
+    </div>
   </div>
+</section>
 
+<!-- MISSION & VISION -->
+<section class="section">
+  <div class="section-head">
+    <h2 class="section-title" data-i18n="mvTitle">Our Purpose</h2>
+    <p class="section-sub" data-i18n="mvSub">Why BeingHuman Blood exists</p>
+  </div>
+  
+  <div class="mv-grid">
+    <div class="mv-card">
+      <div class="mv-icon">🎯</div>
+      <div class="mv-title" data-i18n="missionTitle">Our Mission</div>
+      <div class="mv-text" data-i18n="missionText">To connect every blood seeker with a willing donor in their city within minutes — ensuring no one loses a life due to lack of blood.</div>
+    </div>
+    
+    <div class="mv-card vision">
+      <div class="mv-icon">🌟</div>
+      <div class="mv-title" data-i18n="visionTitle">Our Vision</div>
+      <div class="mv-text" data-i18n="visionText">A Pakistan where blood is never a reason for a lost life — built through the power of community, technology and humanity.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOUNDER MESSAGE -->
+<section class="section">
+  <div class="section-head">
+    <h2 class="section-title" data-i18n="founderTitle">Founder's Message</h2>
+  </div>
+  
+  <div class="founder">
+    <div class="founder-avatar" id="founderAvatar">A</div>
+    <div class="founder-content">
+      <div class="founder-name" id="founderName">Ali Hassan</div>
+      <div class="founder-role" data-i18n="founderRole">Founder, BeingHuman Blood</div>
+      <div class="founder-msg" data-i18n="founderMsg">"I built BeingHuman Blood after seeing families struggle for a single drop of blood. Technology should serve humanity — this is my small contribution to that belief. Every drop counts. Every life matters."</div>
+    </div>
+  </div>
+</section>
+
+<!-- INSPIRATION -->
+<section class="section">
+  <div class="section-head">
+    <h2 class="section-title" data-i18n="inspTitle">The Philosophy of BeingHuman</h2>
+    <p class="section-sub" data-i18n="inspSub">Humanity Beyond Borders</p>
+  </div>
+  <div class="insp-box">
+    <div class="insp-icon">🌍</div>
+    <div class="insp-text" data-i18n="inspText1"></div>
+    <div class="insp-text" data-i18n="inspText2"></div>
+    <div class="insp-text" data-i18n="inspText3"></div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <div class="section-head">
+    <h2 class="section-title" data-i18n="howTitle">How It Works</h2>
+    <p class="section-sub" data-i18n="howSub">Three simple steps to save a life</p>
+  </div>
+  
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-title" data-i18n="step1Title">Search</div>
+      <div class="step-text" data-i18n="step1Text">Enter blood group and city to find matching donors</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-title" data-i18n="step2Title">Connect</div>
+      <div class="step-text" data-i18n="step2Text">Donors get notified and respond if they can help</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-title" data-i18n="step3Title">Save a Life</div>
+      <div class="step-text" data-i18n="step3Text">Donor reaches the hospital and donates blood</div>
+    </div>
+  </div>
+</section>
+
+<!-- POSTS / SUCCESS STORIES -->
+<section class="section">
+  <div class="section-head">
+    <h2 class="section-title" data-i18n="postsTitle">Success Stories</h2>
+    <p class="section-sub" data-i18n="postsSub">Real moments, real lives</p>
+  </div>
+  
+  <div class="posts-grid" id="postsGrid">
+    <div class="empty-posts" data-i18n="noPostsYet">🌟 Abhi koi post nahi hai. Jald hi aayegi!</div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section">
+  <div class="cta">
+    <h2 data-i18n="ctaTitle">Your one drop can save a life</h2>
+    <p data-i18n="ctaText">Register today and become someone's hope.</p>
+    <button class="cta-btn" onclick="goToProfile()" data-i18n="ctaBtn">Register Now</button>
+  </div>
+</section>
+
+<!-- LEGAL NOTICE -->
+<section class="section">
+  <div class="legal">
+    <div class="legal-title">⚖️ <span data-i18n="legalTitle">Legal & Ethical Notice</span></div>
+    <div class="legal-text" data-i18n="legalText1">
+      If any registered blood donor member is found involved in any illegal activity, the organization shall not be responsible. This organization has been created purely for the welfare of people.
+    </div>
+    <div class="legal-text" data-i18n="legalText2">
+      <strong>No one should give money to any donor in exchange for blood.</strong> If any donor demands money from you, please inform us immediately so action can be taken against them.
+    </div>
+    <div class="legal-text" data-i18n="legalText3">
+      If you wish to help, you may contribute whatever is needed to maintain this site — so that, just as you were helped, someone else may be helped too.
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-brand">BeingHuman Blood</div>
+  <div class="footer-tagline">Ek qatra, ek zindagi</div>
+  <div class="footer-links">
+    <a href="home.html" data-i18n="aboutLink">About</a>
+    <a href="#" onclick="openContactModal(); return false;" data-i18n="contactLink">Contact</a>
+    <a href="#" onclick="openRulesModal(); return false;" data-i18n="rulesLink">Rules</a>
+  </div>
+  <div class="footer-note">© 2025 BeingHuman Blood • BeingHuman Foundation — Coming Soon</div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalContent"></div>
+  </div>
 </div>
 
 <script src="firebase/firebase-app-compat.js"></script>
@@ -300,149 +807,217 @@
 // ==========================================
 const translations = {
   en: {
-    signup: "Sign Up", login: "Login",
-    fullName: "Full Name *", whatsapp: "WhatsApp Number *",
-    whatsappHint: "This will be your login and contact number",
-    password: "Password (6+ characters) *",
-    passwordHint: "Remember it — needed for login",
-    city: "City *", bloodGroup: "Blood Group *",
-    email: "Email (optional)", createAccount: "Create Account",
-    loginPhone: "WhatsApp Number", loginPassword: "Password",
-    loginBtn: "Login", welcome: "Welcome",
-    homeBtn: "Open Home", profileBtn: "Edit Profile", logoutBtn: "Logout",
-    loading: "Loading...",
-    fillAll: "Please fill all required fields!",
-    invalidPhone: "Enter a valid 11-digit phone number (03xxxxxxxxx)",
-    invalidPass: "Password must be at least 6 characters",
-    phoneTaken: "This phone number is already registered!",
-    signupSuccess: "Account created successfully!",
-    ownerSuccess: "Congratulations! You are now the OWNER!",
-    loginWrong: "Phone number or password is incorrect",
-    notFound: "This phone number is not registered",
-    emailOptional: "Optional — helps for recovery",
-    signingUp: "Creating account...",
-    loggingIn: "Logging in..."
+    selectLanguage: "Language",
+    selectBloodGroup: "-- Blood Group --",
+    cityPlaceholder: "City (e.g. Daska)",
+    searchBtn: "🩸 SEARCH DONORS",
+    donorsLabel: "Donors",
+    citiesLabel: "Cities",
+    livesLabel: "Lives Saved",
+    postsLabel: "Stories",
+    mvTitle: "Our Purpose",
+    mvSub: "Why BeingHuman Blood exists",
+    missionTitle: "Our Mission",
+    missionText: "To connect every blood seeker with a willing donor in their city within minutes — ensuring no one loses a life due to lack of blood.",
+    visionTitle: "Our Vision",
+    visionText: "A Pakistan where blood is never a reason for a lost life — built through the power of community, technology and humanity.",
+    founderTitle: "Founder's Message",
+    founderRole: "Founder, BeingHuman Blood",
+    founderMsg: '"I built BeingHuman Blood after seeing families struggle for a single drop of blood. Technology should serve humanity — this is my small contribution to that belief. Every drop counts. Every life matters."',
+    inspTitle: "The Philosophy of BeingHuman",
+    inspSub: "Humanity Beyond Borders",
+    inspText1: "While this platform is a proud Pakistani initiative, its core inspiration stems from a powerful message of humanity presented by Salman Khan in one of his films. The philosophy is simple: Help three people, and ask them to help three more. Let kindness multiply.",
+    inspText2: "We believe that for humanity, it does not matter which country you belong to — Indian, Pakistani, or from anywhere in the world. Being human is all that matters. Blood knows no borders, and true humanity means helping others without any discrimination.",
+    inspText3: "This thought moved us to create a space where saving a life is the only priority. We don't seek thanks; we only seek to pass this message of humanity forward.",
+    howTitle: "How It Works",
+    howSub: "Three simple steps to save a life",
+    step1Title: "Search",
+    step1Text: "Enter blood group and city to find matching donors",
+    step2Title: "Connect",
+    step2Text: "Donors get notified and respond if they can help",
+    step3Title: "Save a Life",
+    step3Text: "Donor reaches the hospital and donates blood",
+    postsTitle: "Success Stories",
+    postsSub: "Real moments, real lives",
+    noPostsYet: "🌟 No posts yet. Coming soon!",
+    ctaTitle: "Your one drop can save a life",
+    ctaText: "Register today and become someone's hope.",
+    ctaBtn: "Register Now",
+    legalTitle: "Legal & Ethical Notice",
+    legalText1: "If any registered blood donor member is found involved in any illegal activity, the organization shall not be responsible. This organization has been created purely for the welfare of people.",
+    legalText2: "No one should give money to any donor in exchange for blood. If any donor demands money from you, please inform us immediately so action can be taken against them.",
+    legalText3: "If you wish to help, you may contribute whatever is needed to maintain this site — so that, just as you were helped, someone else may be helped too.",
+    aboutLink: "About",
+    contactLink: "Contact",
+    rulesLink: "Rules",
+    searching: "Searching for donors...",
+    noDonors: "No donors found in this city. Try nearby cities.",
+    donorsFound: "donors available",
+    errorOccurred: "Something went wrong. Please try again.",
+    fillBoth: "Please fill both blood group and city",
+    contactTitle: "Contact Us",
+    contactText: "For any queries, suggestions or to report a donor demanding money, please contact the admin:",
+    rulesTitle: "Community Rules",
+    rulesText: "1. Blood donation is a noble act — never charge money for it.\n2. Report any donor demanding money to the admin immediately.\n3. Respect the privacy of all donors and patients.\n4. Only register if you are genuinely willing to donate.\n5. Keep your contact information updated."
   },
   roman: {
-    signup: "Register", login: "Login",
-    fullName: "Poora Naam *", whatsapp: "WhatsApp Number *",
-    whatsappHint: "Ye tumhara login aur contact number hoga",
-    password: "Password (6+ characters) *",
-    passwordHint: "Yaad rakhna — login ke liye zaruri hai",
-    city: "Shehar *", bloodGroup: "Blood Group *",
-    email: "Email (optional)", createAccount: "Account Banao",
-    loginPhone: "WhatsApp Number", loginPassword: "Password",
-    loginBtn: "Login Karo", welcome: "Khush Aamdeed",
-    homeBtn: "Home Kholo", profileBtn: "Profile Edit", logoutBtn: "Logout",
-    loading: "Load ho raha hai...",
-    fillAll: "Tamam zaruri fields bharein!",
-    invalidPhone: "Sahi 11-digit number daalein (03xxxxxxxxx)",
-    invalidPass: "Password kam se kam 6 characters ka ho",
-    phoneTaken: "Ye number pehle se registered hai!",
-    signupSuccess: "Account ban gaya!",
-    ownerSuccess: "Mubarak! Tum ab OWNER ho!",
-    loginWrong: "Number ya password galat hai",
-    notFound: "Ye number registered nahi hai",
-    emailOptional: "Optional — recovery ke liye behtar",
-    signingUp: "Account ban raha hai...",
-    loggingIn: "Login ho raha hai..."
+    selectLanguage: "Language",
+    selectBloodGroup: "-- Blood Group --",
+    cityPlaceholder: "Shehar (jaise Daska)",
+    searchBtn: "🩸 DONOR DHOONDO",
+    donorsLabel: "Donors",
+    citiesLabel: "Shehar",
+    livesLabel: "Zindagiyan",
+    postsLabel: "Kahaniyan",
+    mvTitle: "Hamara Maqsad",
+    mvSub: "BeingHuman Blood kyun bana",
+    missionTitle: "Hamara Mission",
+    missionText: "Har khoon maangne wale ko minutes mein uske shehar ke willing donor se jodna — taake kisi ki jaan khoon ki kami se na jaye.",
+    visionTitle: "Hamara Vision",
+    visionText: "Ek Pakistan jahan khoon kabhi zindagi khone ki wajah na bane — community, technology aur insaniyat ki taqat se.",
+    founderTitle: "Founder ka Paigham",
+    founderRole: "Founder, BeingHuman Blood",
+    founderMsg: '"Maine BeingHuman Blood banaya jab dekha ke families ek qatre khoon ke liye kitna struggle karti hain. Technology insaniyat ki khidmat kare — ye meri chhoti si koshish hai. Har qatra qeemti hai. Har zindagi qeemti hai."',
+    inspTitle: "BeingHuman ki Falsafa",
+    inspSub: "Insaniyat ki Koi Sarhad Nahi",
+    inspText1: "Ye platform ek Pakistani koshish hai, lekin iski asal inspiration Salman Khan ki ek film se aayi hai jisme unho ne insaniyat ka paigham diya. Falsafa simple hai: 3 logon ki madad karo, aur unse kaho ke wo mazeed 3 ki karein.",
+    inspText2: "Hum mante hain ke insaniyat ke liye ye zaroori nahi ke aap kis mulk se hain — Indian, Pakistani, ya kahin aur se. Insan hona hi sabse ahem hai. Khoon koi sarhad nahi janta, aur asli insaniyat ka matlab hai bina kisi tafreeq ke doosron ki madad karna.",
+    inspText3: "Isi soch ne humein is qabil banaya ke jahan jaan bachana sabse pehle ho. Hum shukriya nahi chahte, bas insaniyat ka ye paigham aage badhana chahte hain.",
+    howTitle: "Kaise Kaam Karta Hai",
+    howSub: "Teen asaan steps mein zindagi bachao",
+    step1Title: "Search Karo",
+    step1Text: "Blood group aur shehar daalo matching donors dhoondne ke liye",
+    step2Title: "Rabta Karo",
+    step2Text: "Donors ko notification jati hai, wo madad karne ka faisla karte hain",
+    step3Title: "Jaan Bachao",
+    step3Text: "Donor hospital pohnchta hai aur khoon deta hai",
+    postsTitle: "Kamyabi ki Kahaniyan",
+    postsSub: "Asli lamhe, asli zindagiyan",
+    noPostsYet: "🌟 Abhi koi post nahi. Jald aayegi!",
+    ctaTitle: "Aapka ek qatra zindagi bacha sakta hai",
+    ctaText: "Aaj register karo aur kisi ki umeed bano.",
+    ctaBtn: "Abhi Register Karo",
+    legalTitle: "Qanooni & Akhlaqi Notice",
+    legalText1: "Agar koi registered blood donor member kisi bhi ghair qanooni kaam mein mila, to idara zimmedar nahi hoga. Ye idara sirf logon ki bhalai ke liye banaya gaya hai.",
+    legalText2: "Koi bhi banda kisi donor ko khoon ke badle paisa na de. Agar koi donor paison ka mutalba kare to foran humein ittila dein.",
+    legalText3: "Agar aap madad karna chahte hain to is site ko maintain karne ke liye jo darkar ho, apna hissa daal sakte hain — jis se jaise aapki madad hui, waise kisi aur ki madad ho sake.",
+    aboutLink: "Baare Mein",
+    contactLink: "Rabta",
+    rulesLink: "Usool",
+    searching: "Donors dhoond rahe hain...",
+    noDonors: "Is shehar mein koi donor nahi mila. Aas paas ke shehar try karo.",
+    donorsFound: "donors available hain",
+    errorOccurred: "Kuch masla hua. Dobara try karein.",
+    fillBoth: "Blood group aur shehar dono bharein",
+    contactTitle: "Rabta Karein",
+    contactText: "Kisi bhi sawal, suggestion ya paise mangne wale donor ki shikayat ke liye admin se rabta karein:",
+    rulesTitle: "Community Rules",
+    rulesText: "1. Khoon dena ek neik amal hai — iske paise hargiz na lein.\n2. Paise mangne wale donor ki foran admin ko ittila dein.\n3. Sab donors aur patients ki privacy ka khayal rakhein.\n4. Sirf tab register karein jab waqai donate karna chahte hain.\n5. Apni contact information update rakhein."
   },
   urdu: {
-    signup: "رجسٹر", login: "لاگ ان",
-    fullName: "پورا نام *", whatsapp: "واٹس ایپ نمبر *",
-    whatsappHint: "یہ آپ کا لاگ ان اور رابطہ نمبر ہوگا",
-    password: "پاس ورڈ (6+ حروف) *",
-    passwordHint: "یاد رکھیں — لاگ ان کے لیے ضروری ہے",
-    city: "شہر *", bloodGroup: "بلڈ گروپ *",
-    email: "ای میل (اختیاری)", createAccount: "اکاؤنٹ بنائیں",
-    loginPhone: "واٹس ایپ نمبر", loginPassword: "پاس ورڈ",
-    loginBtn: "لاگ ان", welcome: "خوش آمدید",
-    homeBtn: "ہوم کھولیں", profileBtn: "پروفائل", logoutBtn: "لاگ آؤٹ",
-    loading: "لوڈ ہو رہا ہے...",
-    fillAll: "تمام ضروری خانے بھریں!",
-    invalidPhone: "درست 11 ہندسوں کا نمبر دیں",
-    invalidPass: "پاس ورڈ کم از کم 6 حروف",
-    phoneTaken: "یہ نمبر پہلے سے رجسٹرڈ ہے!",
-    signupSuccess: "اکاؤنٹ بن گیا!",
-    ownerSuccess: "مبارک! آپ اب OWNER ہیں!",
-    loginWrong: "نمبر یا پاس ورڈ غلط ہے",
-    notFound: "یہ نمبر رجسٹرڈ نہیں ہے",
-    emailOptional: "اختیاری",
-    signingUp: "اکاؤنٹ بن رہا ہے...",
-    loggingIn: "لاگ ان ہو رہا ہے..."
+    selectLanguage: "زبان",
+    selectBloodGroup: "-- بلڈ گروپ --",
+    cityPlaceholder: "شہر (مثلاً ڈسکہ)",
+    searchBtn: "🩸 ڈونر ڈھونڈیں",
+    donorsLabel: "عطیہ دہندگان",
+    citiesLabel: "شہر",
+    livesLabel: "زندگیاں",
+    postsLabel: "کہانیاں",
+    mvTitle: "ہمارا مقصد",
+    mvSub: "BeingHuman Blood کیوں بنا",
+    missionTitle: "ہمارا مشن",
+    missionText: "ہر خون مانگنے والے کو منٹوں میں اس کے شہر کے رضامند ڈونر سے جوڑنا — تاکہ کسی کی جان خون کی کمی سے نہ جائے۔",
+    visionTitle: "ہمارا وژن",
+    visionText: "ایک پاکستان جہاں خون کبھی زندگی کھونے کی وجہ نہ بنے — کمیونٹی، ٹیکنالوجی اور انسانیت کی طاقت سے۔",
+    founderTitle: "بانی کا پیغام",
+    founderRole: "بانی، BeingHuman Blood",
+    founderMsg: '"میں نے BeingHuman Blood اس وقت بنایا جب دیکھا کہ خاندان ایک قطرے خون کے لیے کتنی جدوجہد کرتے ہیں۔ ٹیکنالوجی انسانیت کی خدمت کرے — یہ میری چھوٹی سی کوشش ہے۔ ہر قطرہ قیمتی ہے۔ ہر زندگی قیمتی ہے۔"',
+    inspTitle: "انسانیت کی کوئی سرحد نہیں",
+    inspSub: "ہمارا فلسفہ",
+    inspText1: "یہ پلیٹ فارم اگرچہ ایک پاکستانی کاوش ہے، لیکن اس کی بنیاد وہ پیغام ہے جو سلمان خان نے اپنی ایک فلم میں انسانیت کے حوالے سے دیا — کہ تین لوگوں کی مدد کریں، اور ان سے کہیں کہ وہ بھی تین کی مدد کریں۔",
+    inspText2: "ہمارا ماننا ہے کہ انسانیت کے لیے یہ جاننا ضروری نہیں کہ آپ کا تعلق کس ملک سے ہے — ہندوستان ہو، پاکستان ہو، یا دنیا کا کوئی بھی کونا۔ انسان ہونا ہی سب سے اہم ہے۔ خون کوئی سرحد نہیں جانتا، اور انسانیت کا مطلب ہی بلا تفریق دوسروں کی مدد کرنا ہے۔",
+    inspText3: "یہی سوچ ہمیں کسی کی جان بچانے پر مجبور کرتی ہے۔ ہم کسی شکریے کے طلب گار نہیں، بس انسانیت کا یہ پیغام آگے بڑھانا چاہتے ہیں۔",
+    howTitle: "کیسے کام کرتا ہے",
+    howSub: "تین آسان مراحل میں زندگی بچائیں",
+    step1Title: "تلاش کریں",
+    step1Text: "بلڈ گروپ اور شہر درج کریں، مماثل ڈونر تلاش کریں",
+    step2Title: "رابطہ کریں",
+    step2Text: "ڈونرز کو اطلاع جاتی ہے، وہ مدد کا فیصلہ کرتے ہیں",
+    step3Title: "جان بچائیں",
+    step3Text: "ڈونر ہسپتال پہنچتا ہے اور خون دیتا ہے",
+    postsTitle: "کامیابی کی کہانیاں",
+    postsSub: "اصلی لمحے، اصلی زندگیاں",
+    noPostsYet: "🌟 ابھی کوئی پوسٹ نہیں۔ جلد آئے گی!",
+    ctaTitle: "آپ کا ایک قطرہ زندگی بچا سکتا ہے",
+    ctaText: "آج رجسٹر کریں اور کسی کی امید بنیں۔",
+    ctaBtn: "ابھی رجسٹر کریں",
+    legalTitle: "قانونی و اخلاقی نوٹس",
+    legalText1: "اگر کوئی رجسٹرڈ بلڈ ڈونر ممبر کسی بھی غیر قانونی کارروائی میں ملوث پایا جاتا ہے، تو ادارہ اس کا ذمہ دار نہ ہوگا۔ یہ ادارہ صرف اور صرف لوگوں کی بھلائی کے لیے بنایا گیا ہے۔",
+    legalText2: "کوئی بندہ کسی ڈونر کو خون کے معاوضے میں پیسے نہ دے۔ اگر کوئی ڈونر آپ سے پیسوں کا مطالبہ کرتا ہے تو ہمیں فوراً آگاہ کریں تاکہ اس کے خلاف کارروائی کی جا سکے۔",
+    legalText3: "اگر آپ مدد کرنا چاہتے ہیں تو اس سائٹ کو مینٹین کرنے کے لیے جو درکار ہو، اس میں اپنا حصہ ڈال سکتے ہیں — جس کی مدد سے جیسے آپ کی مدد کی گئی، ایسے کسی اور کی مدد کی جا سکے۔",
+    aboutLink: "تعارف",
+    contactLink: "رابطہ",
+    rulesLink: "اصول",
+    searching: "ڈونر ڈھونڈ رہے ہیں...",
+    noDonors: "اس شہر میں کوئی ڈونر نہیں ملا۔ قریبی شہر آزمائیں۔",
+    donorsFound: "ڈونر دستیاب ہیں",
+    errorOccurred: "کچھ مسئلہ ہوا۔ دوبارہ کوشش کریں۔",
+    fillBoth: "بلڈ گروپ اور شہر دونوں بھریں",
+    contactTitle: "رابطہ کریں",
+    contactText: "کسی بھی سوال، تجویز یا پیسے مانگنے والے ڈونر کی شکایت کے لیے ایڈمن سے رابطہ کریں:",
+    rulesTitle: "کمیونٹی اصول",
+    rulesText: "1. خون دینا ایک نیک عمل ہے — اس کے پیسے ہرگز نہ لیں۔\n2. پیسے مانگنے والے ڈونر کی فوراً ایڈمن کو اطلاع دیں۔\n3. تمام ڈونرز اور مریضوں کی پرائیویسی کا خیال رکھیں۔\n4. صرف تب رجسٹر کریں جب واقعی عطیہ کرنا چاہتے ہیں۔\n5. اپنی رابطہ معلومات اپ ڈیٹ رکھیں۔"
   }
 };
 
+// ==========================================
+// LANGUAGE
+// ==========================================
 let currentLang = localStorage.getItem('bh_lang') || 'en';
 
-function applyLang() {
-  const t = translations[currentLang];
-  document.body.className = 'lang-' + (currentLang === 'urdu' ? 'urdu' : 'en');
-  document.querySelectorAll('[data-key]').forEach(el => {
-    const k = el.getAttribute('data-key');
-    if (t[k]) el.textContent = t[k];
+function detectCountryAndSetLang() {
+  if (localStorage.getItem('bh_lang')) return;
+  fetch('https://ipapi.co/json/')
+    .then(r => r.json())
+    .then(data => {
+      if (data && data.country_code === 'PK') setLang('roman');
+    })
+    .catch(() => {});
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('bh_lang', lang);
+  document.body.className = 'lang-' + (lang === 'urdu' ? 'urdu' : 'en');
+  document.documentElement.lang = lang === 'urdu' ? 'ur' : 'en';
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (translations[lang] && translations[lang][key]) el.textContent = translations[lang][key];
   });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (translations[lang] && translations[lang][key]) el.placeholder = translations[lang][key];
+  });
+  document.querySelectorAll('.lang-option').forEach(el => {
+    el.classList.toggle('active', el.getAttribute('data-lang') === lang);
+  });
+  document.getElementById('langMenu').classList.remove('show');
+
+  // Re-render posts with new language
+  if (window.allPosts) renderPosts(window.allPosts);
 }
 
-function cycleLang() {
-  const order = ['en', 'roman', 'urdu'];
-  const idx = order.indexOf(currentLang);
-  currentLang = order[(idx + 1) % order.length];
-  localStorage.setItem('bh_lang', currentLang);
-  setLangText();
+function toggleLangMenu() {
+  document.getElementById('langMenu').classList.toggle('show');
 }
 
-function setLangText() {
-  const t = translations[currentLang];
-  document.getElementById('tabSignup').textContent = t.signup;
-  document.getElementById('tabLogin').textContent = t.login;
-  document.querySelector('label[for="su_name"], #signup label:nth-of-type(1)');
-  
-  // Update all labels and text
-  const labels = document.querySelectorAll('#signup label');
-  if (labels[0]) labels[0].innerHTML = t.fullName;
-  if (labels[1]) labels[1].innerHTML = t.whatsapp;
-  if (labels[2]) labels[2].innerHTML = t.password;
-  if (labels[3]) labels[3].innerHTML = t.city;
-  if (labels[4]) labels[4].innerHTML = t.bloodGroup;
-  if (labels[5]) labels[5].innerHTML = t.email;
-  
-  document.getElementById('su_btn').textContent = t.createAccount;
-  document.getElementById('li_btn').textContent = t.loginBtn;
-  
-  const loginLabels = document.querySelectorAll('#login label');
-  if (loginLabels[0]) loginLabels[0].textContent = t.loginPhone;
-  if (loginLabels[1]) loginLabels[1].textContent = t.loginPassword;
-}
-
-// ==========================================
-// HELPERS
-// ==========================================
-function normalizePhone(p) {
-  p = (p || '').replace(/\D/g, '');
-  if (p.startsWith('92') && p.length === 12) p = '0' + p.substring(2);
-  if (p.length === 10 && p.startsWith('3')) p = '0' + p;
-  return p;
-}
-
-function phoneToEmail(phone) {
-  return phone + '@beinghumanblood.app';
-}
-
-function showMsg(id, text, type) {
-  const el = document.getElementById(id);
-  el.textContent = text;
-  el.className = 'msg ' + type;
-  el.style.display = 'block';
-  if (type === 'success') setTimeout(() => el.style.display = 'none', 5000);
-}
-
-function showTab(tab) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
-  document.getElementById(tab).classList.add('active');
-}
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('langMenu');
+  if (!e.target.closest('.icon-btn') && !e.target.closest('.lang-menu')) {
+    menu.classList.remove('show');
+  }
+});
 
 // ==========================================
 // FIREBASE
@@ -451,7 +1026,6 @@ function waitForFirebase(cb, tries) {
   tries = tries || 0;
   if (typeof firebase !== 'undefined' && firebase.auth) return cb();
   if (tries < 40) return setTimeout(() => waitForFirebase(cb, tries + 1), 250);
-  document.getElementById('loaderBox').textContent = '❌ Firebase load nahi hua.';
 }
 
 waitForFirebase(function() {
@@ -467,189 +1041,169 @@ waitForFirebase(function() {
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  document.getElementById('loaderBox').style.display = 'none';
-  document.getElementById('appBox').style.display = 'block';
-
-  // ==========================================
-  // SIGNUP
-  // ==========================================
-  window.signup = async function() {
-    const name = document.getElementById('su_name').value.trim();
-    const phoneRaw = document.getElementById('su_phone').value.trim();
-    const pass = document.getElementById('su_pass').value;
-    const city = document.getElementById('su_city').value.trim();
-    const blood = document.getElementById('su_blood').value;
-    const emailOpt = document.getElementById('su_email').value.trim();
-    const t = translations[currentLang];
-    const btn = document.getElementById('su_btn');
-
-    if (!name || !phoneRaw || !pass || !city || !blood) {
-      return showMsg('su_msg', t.fillAll, 'error');
-    }
-
-    const phone = normalizePhone(phoneRaw);
-    if (phone.length !== 11 || !phone.startsWith('03')) {
-      return showMsg('su_msg', t.invalidPhone, 'error');
-    }
-    if (pass.length < 6) {
-      return showMsg('su_msg', t.invalidPass, 'error');
-    }
-
-    btn.disabled = true;
-    btn.textContent = t.signingUp;
-
-    try {
-      // Check if phone already registered
-      const existing = await db.collection('users').where('phone', '==', phone).limit(1).get();
-      if (!existing.empty) {
-        showMsg('su_msg', t.phoneTaken, 'error');
-        btn.disabled = false;
-        btn.textContent = t.createAccount;
-        return;
-      }
-
-      // Create auth user with fake email
-      const fakeEmail = phoneToEmail(phone);
-      const userCred = await auth.createUserWithEmailAndPassword(fakeEmail, pass);
-      const uid = userCred.user.uid;
-
-      // Check if first user → owner
-      const allUsers = await db.collection('users').limit(1).get();
-      const isFirst = allUsers.empty;
-      const role = isFirst ? 'owner' : 'donor';
-
-      // Save user doc
-      await db.collection('users').doc(uid).set({
-        name: name,
-        phone: phone,
-        email: emailOpt || '',
-        city: city,
-        blood: blood,
-        role: role,
-        uid: uid,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        available: true,
-        donations: 0,
-        isProtected: isFirst
-      });
-
-      // Save donor doc for search
-      await db.collection('donors').doc(uid).set({
-        name: name,
-        phone: phone,
-        city: city,
-        blood: blood,
-        role: role,
-        uid: uid,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        available: true,
-        donations: 0
-      });
-
-      showMsg('su_msg', isFirst ? t.ownerSuccess : t.signupSuccess, 'success');
-
-      // Clear form
-      ['su_name','su_phone','su_pass','su_city','su_blood','su_email'].forEach(id => document.getElementById(id).value = '');
-
-    } catch (e) {
-      let msg = e.message;
-      if (msg.includes('email-already-in-use')) msg = t.phoneTaken;
-      showMsg('su_msg', msg, 'error');
-    }
-
-    btn.disabled = false;
-    btn.textContent = t.createAccount;
-  };
-
-  // ==========================================
-  // LOGIN
-  // ==========================================
-  window.login = async function() {
-    const phoneRaw = document.getElementById('li_phone').value.trim();
-    const pass = document.getElementById('li_pass').value;
-    const t = translations[currentLang];
-    const btn = document.getElementById('li_btn');
-
-    if (!phoneRaw || !pass) {
-      return showMsg('li_msg', t.fillAll, 'error');
-    }
-
-    const phone = normalizePhone(phoneRaw);
-    if (phone.length !== 11) {
-      return showMsg('li_msg', t.invalidPhone, 'error');
-    }
-
-    btn.disabled = true;
-    btn.textContent = t.loggingIn;
-
-    try {
-      const fakeEmail = phoneToEmail(phone);
-      await auth.signInWithEmailAndPassword(fakeEmail, pass);
-      // onAuthStateChanged handles the rest
-    } catch (e) {
-      let msg = e.message;
-      if (msg.includes('user-not-found')) msg = t.notFound;
-      else if (msg.includes('wrong-password') || msg.includes('invalid-credential')) msg = t.loginWrong;
-      showMsg('li_msg', msg, 'error');
-      btn.disabled = false;
-      btn.textContent = t.loginBtn;
-    }
-  };
-
-  // ==========================================
-  // AUTH STATE
-  // ==========================================
   auth.onAuthStateChanged(async function(user) {
-    const mainTabs = document.getElementById('mainTabs');
-    const welcome = document.getElementById('welcome');
-
-    if (user) {
-      try {
-        const doc = await db.collection('users').doc(user.uid).get();
-        if (doc.exists) {
-          const d = doc.data();
-          mainTabs.style.display = 'none';
-          document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-          welcome.classList.add('show');
-
-          document.getElementById('w_avatar').textContent = (d.name || 'U').charAt(0).toUpperCase();
-          document.getElementById('w_name').textContent = d.name || 'User';
-          document.getElementById('w_phone').textContent = d.phone || '';
-          document.getElementById('w_city').textContent = d.city || '';
-          document.getElementById('w_blood').textContent = d.blood || '';
-
-          if (d.email) {
-            document.getElementById('w_email').textContent = d.email;
-            document.getElementById('w_email_row').style.display = 'block';
-          } else {
-            document.getElementById('w_email_row').style.display = 'none';
-          }
-
-          const roleEl = document.getElementById('w_role');
-          roleEl.textContent = (d.role || 'donor').toUpperCase();
-          roleEl.className = 'role-badge role-' + (d.role || 'donor');
-        }
-      } catch (e) { console.error(e); }
-    } else {
-      mainTabs.style.display = 'flex';
-      welcome.classList.remove('show');
-      document.getElementById('signup').classList.add('active');
-      document.getElementById('login').classList.remove('active');
-      document.getElementById('tabSignup').classList.add('active');
-      document.getElementById('tabLogin').classList.remove('active');
+    if (!user) { 
+      document.getElementById('userName').textContent = 'Login';
+      return; 
     }
+    try {
+      const doc = await db.collection('users').doc(user.uid).get();
+      if (doc.exists) {
+        const d = doc.data();
+        document.getElementById('userName').textContent = (d.name || 'User').split(' ')[0];
+        if (d.role === 'owner' || d.role === 'admin') {
+          document.getElementById('founderName').textContent = d.name || 'Ali Hassan';
+          document.getElementById('founderAvatar').textContent = (d.name || 'A').charAt(0).toUpperCase();
+        }
+      }
+    } catch (e) { console.error(e); }
   });
 
-  window.goToHome = function() { window.location.href = 'home.html'; };
-  window.goToProfile = function() { window.location.href = 'profile.html'; };
-  window.logout = async function() {
-    await auth.signOut();
-    location.reload();
+  window.goToProfile = function() { 
+    if (firebase.auth().currentUser) {
+      window.location.href = 'profile.html'; 
+    } else {
+      window.location.href = 'login.html';
+    }
   };
 
-  // Init language
-  setLangText();
+  // Load stats
+  async function loadStats() {
+    try {
+      const snap = await db.collection('donors').get();
+      const cities = new Set();
+      snap.forEach(doc => {
+        const c = doc.data().city;
+        if (c) cities.add(c.toLowerCase().trim());
+      });
+      document.getElementById('statDonors').textContent = snap.size;
+      document.getElementById('statCities').textContent = cities.size;
+      document.getElementById('statLives').textContent = Math.floor(snap.size / 4);
+    } catch (e) { console.error(e); }
+  }
+  loadStats();
+
+  // Load posts
+  async function loadPosts() {
+    try {
+      const snap = await db.collection('posts').orderBy('createdAt', 'desc').limit(6).get();
+      const posts = [];
+      snap.forEach(doc => posts.push({ id: doc.id, ...doc.data() }));
+      window.allPosts = posts;
+      renderPosts(posts);
+      document.getElementById('statPosts').textContent = posts.length;
+    } catch (e) {
+      console.error(e);
+      renderPosts([]);
+    }
+  }
+  loadPosts();
+
+  window.renderPosts = function(posts) {
+    const grid = document.getElementById('postsGrid');
+    if (!posts || posts.length === 0) {
+      grid.innerHTML = '<div class="empty-posts">' + (translations[currentLang].noPostsYet || '') + '</div>';
+      return;
+    }
+    grid.innerHTML = posts.map(p => `
+      <div class="post-card" onclick="openPostModal('${p.id}')">
+        <div class="post-img ${p.image ? 'has-img' : ''}" ${p.image ? 'style="background-image:url(' + p.image + ')"' : ''}>${p.image ? '' : '🩸'}</div>
+        <div class="post-body">
+          <div class="post-tag">${p.tag || 'STORY'}</div>
+          <div class="post-title">${p.title || ''}</div>
+          <div class="post-text">${(p.caption || '').substring(0, 90)}${(p.caption || '').length > 90 ? '...' : ''}</div>
+        </div>
+      </div>
+    `).join('');
+  };
+
+  window.searchDonors = async function() {
+    const blood = document.getElementById('searchBlood').value;
+    const city = document.getElementById('searchCity').value.trim().toLowerCase();
+    const box = document.getElementById('resultsBox');
+    const t = translations[currentLang];
+
+    if (!blood || !city) {
+      box.innerHTML = '<div class="empty">' + t.fillBoth + '</div>';
+      box.classList.add('show');
+      return;
+    }
+
+    box.innerHTML = '<div class="empty">' + t.searching + '</div>';
+    box.classList.add('show');
+
+    try {
+      const snap = await db.collection('donors')
+        .where('blood', '==', blood)
+        .where('city', '==', city)
+        .get();
+
+      if (snap.size === 0) {
+        box.innerHTML = '<div class="empty">😔 ' + t.noDonors + '</div>';
+      } else {
+        box.innerHTML = `
+          <div class="big">
+            <div class="num">${snap.size}</div>
+            <div class="lbl">${blood} • ${city} — ${t.donorsFound}</div>
+          </div>
+        `;
+      }
+    } catch (e) {
+      box.innerHTML = '<div class="empty">' + t.errorOccurred + '</div>';
+    }
+  };
+
+  
+  window.openUrgent = function() { window.location.href = 'app.html'; };
 });
+
+// ==========================================
+(function(){var Q=[{c:"qs-1",h:'<p><span class="hl">حقوق اللہ</span> تو شاید معاف ہو جائیں، مگر <span class="hl">حقوق العباد</span> معاف نہیں ہوں گے</p>'},{c:"qs-2",h:'<p>جو <span class="hl">لوگوں کے کام</span> آتا ہے، اللہ اسے <span class="hl">یاد رکھتا ہے</span></p>'},{c:"qs-3",h:'<p><span class="hl">ایک قطرہ خون</span>، ایک زندگی — یہ سب سے <span class="hl">بڑا صدقہ</span> ہے</p>'},{c:"qs-4",h:'<p>تم <span class="hl">بہترین انسان</span> ہو، جو دوسروں کی <span class="hl">مدد</span> کرتے ہو</p>'}];var t=document.getElementById("qsTrack"),d=document.getElementById("qsDots");if(!t)return;Q.forEach(function(q,i){var s=document.createElement("div");s.className="qs-slide "+q.c;s.innerHTML=q.h;t.appendChild(s);var dot=document.createElement("div");dot.className="qs-dot"+(i===0?" active":"");dot.onclick=function(){go(i)};d.appendChild(dot)});var idx=0;function go(i){idx=(i+Q.length)%Q.length;t.style.transform="translateX(-"+idx*100+"%)";var ds=d.querySelectorAll(".qs-dot");for(var j=0;j<ds.length;j++)ds[j].classList.toggle("active",j===idx)}setInterval(function(){go(idx+1)},4000);var sx=0;t.addEventListener("touchstart",function(e){sx=e.touches[0].clientX});t.addEventListener("touchend",function(e){var diff=e.changedTouches[0].clientX-sx;if(diff>50)go(idx-1);else if(diff<-50)go(idx+1)})})();
+
+// MODALS
+// ==========================================
+function openModal(html) {
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+function openContactModal() {
+  const t = translations[currentLang];
+  openModal(`
+    <h2>${t.contactTitle}</h2>
+    <p>${t.contactText}</p>
+    <p><strong>📧 Email:</strong> khoonitiger121@gmail.com</p>
+    <p><strong>📞 WhatsApp:</strong> +92 301 6631720</p>
+  `);
+}
+
+function openRulesModal() {
+  const t = translations[currentLang];
+  openModal(`
+    <h2>${t.rulesTitle}</h2>
+    <p style="white-space:pre-line;">${t.rulesText}</p>
+  `);
+}
+
+function openPostModal(id) {
+  const post = (window.allPosts || []).find(p => p.id === id);
+  if (!post) return;
+  openModal(`
+    ${post.image ? '<img src="' + post.image + '" style="width:100%;border-radius:12px;margin-bottom:15px;">' : ''}
+    <h2>${post.title || ''}</h2>
+    <p>${post.caption || ''}</p>
+    <p style="font-size:12px;color:#999;margin-top:15px;">— ${post.author || 'BeingHuman Blood'}</p>
+  `);
+}
+
+// ==========================================
+// INIT
+// ==========================================
+setLang(currentLang);
+detectCountryAndSetLang();
 </script>
 </body>
 </html>

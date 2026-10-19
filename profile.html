@@ -141,7 +141,7 @@
 
     auth.onAuthStateChanged(async function(user) {
       if (!user) {
-        window.location.href = 'index.html';
+        window.location.href = 'login.html';
         return;
       }
 
@@ -150,7 +150,7 @@
       try {
         const doc = await db.collection('users').doc(user.uid).get();
         if (!doc.exists) {
-          window.location.href = 'index.html';
+          window.location.href = 'login.html';
           return;
         }
 
@@ -177,7 +177,7 @@
 
     window.saveProfile = async function() {
       const name = document.getElementById('p_name').value.trim();
-      const city = document.getElementById('p_city').value.trim();
+      const city = document.getElementById('p_city').value.trim().toLowerCase();
       const blood = document.getElementById('p_blood').value;
       const phone = document.getElementById('p_phone').value.trim();
       const btn = document.getElementById('saveBtn');
@@ -237,7 +237,7 @@
     };
 
     window.goBack = function() {
-      window.location.href = 'index.html';
+      window.location.href = 'login.html';
     };
   });
 </script>
