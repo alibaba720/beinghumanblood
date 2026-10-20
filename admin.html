@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard - Debug</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+  body { background: #f4f6f8; color: #333; padding-bottom: 50px; }
+  
+  .header { background: #8B0000; padding: 15px; color: white; text-align: center; }
+  .header h1 { font-size: 18px; }
+  
+  /* DEBUG BOX */
+  #debugBox { background: #fff3cd; border: 2px solid #ffecb5; margin: 10px; padding: 10px; border-radius: 8px; font-size: 12px; font-family: monospace; color: #856404; max-height: 200px; overflow-y: auto; }
+  .err { color: red; font-weight: bold; }
+
+  .container { padding: 15px; max-width: 600px; margin: 0 auto; }
+  
+  .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #27ae60; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+  .card-title { font-size: 16px; font-weight: 800; color: #8B0000; margin-bottom: 5px; }
+  .info-row { font-size: 13px; margin-bottom: 5px; color: #555; }
+  .info-row b { color: #222; }
+
+  .tabs { display: flex; background: white; margin-bottom: 15px; }
+  .tab { flex: 1; padding: 15px; text-align: center; font-weight: bold; cursor: pointer; border-bottom: 3px solid transparent; }
+  .tab.active { border-bottom-color: #8B0000; color: #8B0000; }
+  .section { display: none; }
+  .section.active { display: block; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <h1>👑 Admin Debug Mode</h1>
+</header>
+
+<div id="debugBox">
+  <div>Starting...</div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('reqs', event)">Requests</div>
+  <div class="tab" onclick="switchTab('mems', event)">Members</div>
+</div>
+
+<div class="container">
+  <div id="reqs" class="section active">
+    <div id="reqsList">Loading...</div>
+  </div>
+  <div id="mems" class="section">
+    <div id="memsList">Loading...</div>
+  </div>
+</div>
+
+<script src="firebase/firebase-app-compat.js"></script>
+<script src="firebase/firebase-auth-compat.js"></script>
+<script src="firebase/firebase-firestore-compat.js"></script>
+<script>
+  const dbg = document.getElementById('debugBox');
+  function log(msg, isErr = false) {
+    const d = document.createElement('div');
+    if (isErr) d.className = 'err';
+    d.textContent = "> " + msg;
+    dbg.appendChild(d);
+    dbg.scrollTop = dbg.scrollHeight;
+  }
+
+  log("Checking Firebase...");
+  if (typeof firebase === 'undefined') {
+    log("Firebase script NOT loaded!", true);
+  } else {
+    log("Firebase loaded.");
+    const firebaseConfig = {
+      apiKey: "AIzaSyAp8lKgJuBKpHdXF4pXHr7U3aXwtZUKv_4",
+      authDomain: "beinghuman-blood-pk.firebaseapp.com",
+      projectId: "beinghuman-blood-pk",
+      storageBucket: "beinghuman-blood-pk.firebasestorage.app",
+      messagingSenderId: "46427863084",
+      appId: "1:46427863084:web:fff219fd6e17fd83e23989"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    log("Checking Auth...");
+    auth.onAuthStateChanged(async function(user) {
+      if (!user) {
+        log("No user logged in. Redirecting to login...", true);
+        // window.location.href = 'login.html'; // Redirect disabled for debug
+        return;
+      }
+      log("User logged in: " + user.uid);
+
+      try {
+        log("Fetching User Data...");
+        const doc = await db.collection('users').doc(user.uid).get();
+        if (doc.exists) {
+          const d = doc.data();
+          log("User Role: " + d.role);
+          if (d.role !== 'owner' && d.role !== 'admin') {
+             log("Role is not admin/owner!", true);
+             return;
+          }
+        }
+      } catch(e) {
+        log("Auth fetch error: " + e.message, true);
+      }
+
+      loadRequests();
+      loadMembers();
+    });
+
+    async function loadRequests() {
+      log("Fetching Requests from Firestore...");
+      const list = document.getElementById('reqsList');
+      try {
+        const snap = await db.collection('requests').get();
+        log("Requests fetched. Count: " + snap.size);
+        
+        if (snap.empty) {
+          list.innerHTML = 'No requests found in database.';
+          return;
+        }
+
+        let html = '';
+        snap.forEach(doc => {
+          const r = doc.data();
+          log("Loaded request: " + r.patientName);
+          html += `
+            <div class="card">
+              <div class="card-title">🩸 ${r.blood || 'N/A'} Needed</div>
+              <div class="info-row"><b>Patient:</b> ${r.patientName || 'N/A'}</div>
+              <div class="info-row"><b>Phone:</b> ${r.patientPhone || 'N/A'}</div>
+              <div class="info-row"><b>City:</b> ${r.city || 'N/A'}</div>
+              <div class="info-row"><b>Status:</b> ${r.status || 'N/A'}</div>
+            </div>
+          `;
+        });
+        list.innerHTML = html;
+        log("Requests rendered successfully.");
+
+      } catch (e) {
+        log("Error loading requests: " + e.message, true);
+        list.innerHTML = 'Error loading requests.';
+      }
+    }
+
+    async function loadMembers() {
+      log("Fetching Members from Firestore...");
+      const list = document.getElementById('memsList');
+      try {
+        const snap = await db.collection('users').get();
+        log("Members fetched. Count: " + snap.size);
+        
+        let html = '';
+        snap.forEach(doc => {
+          const m = doc.data();
+          html += `
+            <div class="card">
+              <div class="card-title">${m.name || 'N/A'}</div>
+              <div class="info-row"><b>Role:</b> ${m.role || 'N/A'}</div>
+              <div class="info-row"><b>Phone:</b> ${m.phone || 'N/A'}</div>
+            </div>
+          `;
+        });
+        list.innerHTML = html;
+      } catch (e) {
+        log("Error loading members: " + e.message, true);
+        list.innerHTML = 'Error loading members.';
+      }
+    }
+
+    window.switchTab = function(tab, event) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById(tab).classList.add('active');
+    };
+  }
+</script>
+</body>
+</html>

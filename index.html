@@ -584,6 +584,7 @@ body.lang-urdu .insp-text { font-size: 17px; line-height: 2.4; text-align: right
 </style>
 </head>
 <body class="lang-en">
+<div id="toastContainer"></div>
 
 <!-- HEADER -->
 <header class="header">
@@ -917,6 +918,7 @@ const translations = {
     donorsFound: "donors available",
     errorOccurred: "Something went wrong. Please try again.",
     fillBoth: "Please fill both blood group and city",
+    otherAcceptedMsg: "Allah chose someone else for this noble deed this time. Perhaps next time, He will choose you. ❤️",
     contactTitle: "Contact Us",
     contactText: "For any queries, suggestions or to report a donor demanding money, please contact the admin:",
     rulesTitle: "Community Rules",
@@ -971,6 +973,7 @@ const translations = {
     donorsFound: "donors available hain",
     errorOccurred: "Kuch masla hua. Dobara try karein.",
     fillBoth: "Blood group aur shehar dono bharein",
+    otherAcceptedMsg: "Allah ne is baar ye naik kaam kisi aur ke zimme laga diya, shayad agli baari Allah ye zimmedari aapko de. ❤️",
     contactTitle: "Rabta Karein",
     contactText: "Kisi bhi sawal, suggestion ya paise mangne wale donor ki shikayat ke liye admin se rabta karein:",
     rulesTitle: "Community Rules",
@@ -1025,6 +1028,7 @@ const translations = {
     donorsFound: "ڈونر دستیاب ہیں",
     errorOccurred: "کچھ مسئلہ ہوا۔ دوبارہ کوشش کریں۔",
     fillBoth: "بلڈ گروپ اور شہر دونوں بھریں",
+    otherAcceptedMsg: "اللہ نے اس بار یہ نیک کام کسی اور کے ذمے لگا دیا، شاید اگلی بار اللہ یہ ذمہ داری آپ کو دے۔ ❤️",
     contactTitle: "رابطہ کریں",
     contactText: "کسی بھی سوال، تجویز یا پیسے مانگنے والے ڈونر کی شکایت کے لیے ایڈمن سے رابطہ کریں:",
     rulesTitle: "کمیونٹی اصول",
@@ -1226,6 +1230,45 @@ waitForFirebase(function() {
       alert("Error: " + e.message);
     }
   };
+
+  
+  // ==========================================
+  // TOAST NOTIFICATIONS (OTHER DONORS)
+  // ==========================================
+  let shownToasts = [];
+  
+  function showToast(message) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast-msg';
+    toast.innerHTML = `<span class="icon">🤲</span> <span>${message}</span>`;
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.style.animation = 'fadeOut 0.4s forwards';
+      setTimeout(() => toast.remove(), 400);
+    }, 6000);
+  }
+
+  // Listen for any request being accepted
+  db.collection('requests').onSnapshot(snapshot => {
+    snapshot.docChanges().forEach(change => {
+      if (change.type === 'modified') {
+        const r = change.doc.data();
+        if (r.status === 'accepted' && 
+            firebase.auth().currentUser && 
+            r.acceptedBy !== firebase.auth().currentUser.uid && 
+            r.city === currentUserCity) {
+          
+          if (!shownToasts.includes(change.doc.id)) {
+            shownToasts.push(change.doc.id);
+            const t = translations[currentLang];
+            showToast(t.otherAcceptedMsg || "Allah ne is baar ye naik kaam kisi aur ke zimme laga diya...");
+          }
+        }
+      }
+    });
+  });
 
   window.openReqModal = function(blood, city) {
     currentReqBlood = blood;
