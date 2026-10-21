@@ -178,6 +178,11 @@
         const roleEl = document.getElementById('p_role');
         roleEl.textContent = currentRole;
         roleEl.className = 'role-display role-' + currentRole;
+        
+        if (currentRole === 'owner' || currentRole === 'admin') {
+            const adminBtn = document.getElementById('adminBtnProfile');
+            if (adminBtn) adminBtn.style.display = 'block';
+        }
 
         document.getElementById('loaderBox').style.display = 'none';
         document.getElementById('formBox').style.display = 'block';
