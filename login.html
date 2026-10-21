@@ -225,6 +225,17 @@
 
       <!-- SIGNUP -->
       <div id="signup" class="section active">
+        
+        <!-- SIGNUP DP -->
+        <div style="text-align:center; margin-bottom: 15px;">
+          <div style="position:relative; display:inline-block;">
+            <img id="signupDPPreview" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid #8B0000;">
+            <label for="signupDPInput" style="position:absolute; bottom:0; right:0; background:#8B0000; color:white; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid white; font-size:12px;">📷</label>
+            <input type="file" id="signupDPInput" accept="image/*" style="display:none" onchange="uploadSignupDP(this)">
+          </div>
+          <p style="font-size:11px; color:#888; margin-top:5px;">Profile Photo (Optional)</p>
+        </div>
+
         <label>Poora Naam *</label>
         <input type="text" id="su_name" placeholder="Ali Hassan">
 
@@ -550,6 +561,8 @@ waitForFirebase(function() {
 
       // Clear form
       ['su_name','su_phone','su_pass','su_city','su_blood','su_email'].forEach(id => document.getElementById(id).value = '');
+        window.signupDP_Url = "";
+        document.getElementById('signupDPPreview').src = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
 
     } catch (e) {
       let msg = e.message;

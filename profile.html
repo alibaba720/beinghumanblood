@@ -62,6 +62,17 @@
       ℹ️ Sirf <b>naam, city, blood group aur phone</b> change ho sakta hai. Role (owner/admin) sirf admin change kar sakta hai.
     </div>
 
+    
+    <!-- DP UPLOAD -->
+    <div style="text-align:center; margin-bottom: 20px;">
+      <div style="position:relative; display:inline-block;">
+        <img id="dpPreview" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid #8B0000;">
+        <label for="dpInput" style="position:absolute; bottom:0; right:0; background:#8B0000; color:white; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid white; font-size:14px;">📷</label>
+        <input type="file" id="dpInput" accept="image/*" style="display:none" onchange="uploadDP(this)">
+      </div>
+      <p style="font-size:11px; color:#888; margin-top:5px;">Apni photo lagayein (DP)</p>
+    </div>
+
     <label>Poora Naam</label>
     <input type="text" id="p_name" placeholder="Ali Hassan">
 
@@ -158,6 +169,7 @@
         currentRole = d.role || 'donor';
 
         document.getElementById('p_name').value = d.name || '';
+        if(d.dpUrl) { const img = document.getElementById('dpPreview'); if(img) img.src = d.dpUrl; }
         document.getElementById('p_email').value = d.email || '';
         document.getElementById('p_city').value = d.city || '';
         document.getElementById('p_blood').value = d.blood || '';
@@ -174,6 +186,42 @@
         document.getElementById('loaderBox').textContent = '❌ Error: ' + e.message;
       }
     });
+
+    
+  // DP UPLOAD LOGIC
+  window.uploadDP = async function(input) {
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    const preview = document.getElementById('dpPreview');
+    if(preview) preview.style.opacity = '0.5';
+    
+    try {
+      const res = await fetch('https://api.imgbb.com/1/upload?key=acf406577080c6461de37537b9c2add6', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (data.success) {
+        const url = data.data.url;
+        const user = firebase.auth().currentUser;
+        if (user) {
+            await db.collection('users').doc(user.uid).update({ dpUrl: url });
+            await db.collection('donors').doc(user.uid).update({ dpUrl: url }).catch(()=>{});
+        }
+        if(preview) preview.src = url;
+        alert("✅ Photo upload ho gayi!");
+      } else {
+        alert("Upload error: " + (data.error ? data.error.message : 'Unknown error'));
+      }
+    } catch(e) {
+      alert("Network error: " + e.message);
+    }
+    if(preview) preview.style.opacity = '1';
+  };
+
 
     window.saveProfile = async function() {
       const name = document.getElementById('p_name').value.trim();

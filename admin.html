@@ -243,10 +243,13 @@
       members.forEach(m => {
         html += `
           <div class="member-card">
-            <div class="member-info">
-              <h4>${m.name} <span class="role-badge role-${m.role}">${m.role}</span></h4>
-              <p>🩸 ${m.blood} • 📍 ${m.city}</p>
-              <p>📞 <a href="tel:${m.phone}" style="color:#8B0000;text-decoration:none;">${m.phone}</a></p>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <img src="${m.dpUrl || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}" style="width:45px; height:45px; border-radius:50%; object-fit:cover; border:2px solid #eee;">
+              <div class="member-info">
+                <h4>${m.name} <span class="role-badge role-${m.role}">${m.role}</span></h4>
+                <p>🩸 ${m.blood} • 📍 ${m.city}</p>
+                <p>📞 <a href="tel:${m.phone}" style="color:#8B0000;text-decoration:none;">${m.phone}</a></p>
+              </div>
             </div>
             <div>
               ${m.role !== 'owner' ? `
