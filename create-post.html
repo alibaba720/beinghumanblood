@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Memory - BeingHuman Blood</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+  body { background: #f4f6f8; padding-bottom: 50px; }
+  .header { background: linear-gradient(135deg, #8B0000, #c0392b); padding: 15px; color: white; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .header h1 { font-size: 18px; font-weight: 800; }
+  .back-btn { background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; text-decoration: none; }
+  .container { max-width: 500px; margin: 20px auto; padding: 0 15px; }
+  .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+  label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; color: #333; }
+  input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #eee; border-radius: 8px; font-size: 14px; font-family: inherit; }
+  input:focus, textarea:focus { outline: none; border-color: #8B0000; }
+  .img-preview { width: 100%; height: 200px; border-radius: 8px; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; background: #fafafa; color: #888; cursor: pointer; overflow: hidden; }
+  .img-preview img { width: 100%; height: 100%; object-fit: cover; }
+  button { width: 100%; padding: 15px; background: #8B0000; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; }
+  button:disabled { opacity: 0.6; }
+</style>
+</head>
+<body>
+<header class="header">
+  <h1>📸 Create Memory</h1>
+  <a href="index.html" class="back-btn">← Back</a>
+</header>
+
+<div class="container">
+  <div class="card">
+    <label>Donor ki Photo (Upload)</label>
+    <label for="postImg" class="img-preview" id="imgPreview">
+      <div id="previewText" style="text-align:center;">➕ Tap to upload photo</div>
+      <img id="previewImg" src="" style="display:none;">
+    </label>
+    <input type="file" id="postImg" accept="image/*" style="display:none" onchange="previewImage(this)">
+
+    <label>Donor ka Naam *</label>
+    <input type="text" id="postName" placeholder="Ali Hassan">
+
+    <label>City *</label>
+    <input type="text" id="postCity" placeholder="Daska">
+
+    <label>Caption / Story *</label>
+    <textarea id="postCaption" rows="4" placeholder="Ye hamare bhai [Naam] hain, jinhone Daska mein kisi ki jaan bachai. Allah inke is amal ko qabool kry. ❤️"></textarea>
+
+    <button onclick="submitPost()" id="submitBtn">Post Karo</button>
+  </div>
+</div>
+
+<script src="firebase/firebase-app-compat.js"></script>
+<script src="firebase/firebase-auth-compat.js"></script>
+<script src="firebase/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAp8lKgJuBKpHdXF4pXHr7U3aXwtZUKv_4",
+    authDomain: "beinghuman-blood-pk.firebaseapp.com",
+    projectId: "beinghuman-blood-pk",
+    storageBucket: "beinghuman-blood-pk.firebasestorage.app",
+    messagingSenderId: "46427863084",
+    appId: "1:46427863084:web:fff219fd6e17fd83e23989"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  let postImgUrl = "";
+
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) { window.location.href = 'login.html'; return; }
+    const doc = await db.collection('users').doc(user.uid).get();
+    if (doc.exists) {
+      const r = doc.data().role;
+      if (r !== 'owner' && r !== 'admin' && r !== 'moderator') {
+        alert('Access Denied! Only Owners, Admins, and Moderators can post.');
+        window.location.href = 'index.html';
+      }
+    }
+  });
+
+  window.previewImage = function(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('previewText').style.display = 'none';
+        document.getElementById('previewImg').src = e.target.result;
+        document.getElementById('previewImg').style.display = 'block';
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  };
+
+  window.submitPost = async function() {
+    const name = document.getElementById('postName').value.trim();
+    const city = document.getElementById('postCity').value.trim();
+    const caption = document.getElementById('postCaption').value.trim();
+    const file = document.getElementById('postImg').files[0];
+    const btn = document.getElementById('submitBtn');
+
+    if (!name || !city || !caption) return alert('Sab fields bharein!');
+    if (!file) return alert('Photo upload karein!');
+
+    btn.disabled = true; btn.textContent = 'Uploading Photo...';
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      const res = await fetch('https://api.imgbb.com/1/upload?key=acf406577080c6461de37537b9c2add6', { method: 'POST', body: formData });
+      const data = await res.json();
+
+      if (!data.success) throw new Error('Image upload failed');
+      postImgUrl = data.data.url;
+
+      btn.textContent = 'Saving Post...';
+      const user = firebase.auth().currentUser;
+      let authorName = 'Admin';
+      if(user) {
+          const uDoc = await db.collection('users').doc(user.uid).get();
+          if(uDoc.exists) authorName = uDoc.data().name;
+      }
+
+      await db.collection('posts').add({
+        name: name, city: city, caption: caption, imgUrl: postImgUrl,
+        author: authorName,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      alert('✅ Post successfully uploaded!');
+      window.location.href = 'index.html';
+
+    } catch (e) {
+      alert('Error: ' + e.message);
+      btn.disabled = false; btn.textContent = 'Post Karo';
+    }
+  };
+</script>
+</body>
+</html>

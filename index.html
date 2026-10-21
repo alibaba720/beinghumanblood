@@ -598,6 +598,7 @@ body.lang-urdu .insp-text { font-size: 17px; line-height: 2.4; text-align: right
     </a>
     <div class="header-actions">
       <button class="icon-btn" id="adminPanelBtn" onclick="window.location.href='admin.html'" title="Admin Panel" style="display:none; background:#FFD700; color:#5a0000; font-size:20px;">👑</button>
+      <button class="icon-btn" id="createPostBtn" onclick="window.location.href='create-post.html'" title="Create Post" style="display:none; background:#3498db; color:white; font-size:18px;">📸</button>
       <button class="icon-btn" onclick="toggleLangMenu()" title="Language">🌐</button>
       <button class="icon-btn" onclick="openDonorReqModal()" title="Blood Requests" style="position:relative;">🔔<span id="reqDot" style="display:none;position:absolute;top:6px;right:6px;width:10px;height:10px;background:#e74c3c;border-radius:50%;border:1px solid white;"></span></button>
       <button class="user-btn" onclick="goToProfile()" style="display:flex; align-items:center; gap:5px; padding-left:5px;"><img id="headerDP" src="" style="width:28px; height:28px; border-radius:50%; object-fit:cover; display:none; border:2px solid rgba(255,255,255,0.5);"> <span id="userName">User</span></button>
@@ -751,8 +752,16 @@ body.lang-urdu .insp-text { font-size: 17px; line-height: 2.4; text-align: right
     <p class="section-sub" data-i18n="postsSub">Real moments, real lives</p>
   </div>
   
-  <div class="posts-grid" id="postsGrid">
-    <div class="empty-posts" data-i18n="noPostsYet">🌟 Abhi koi post nahi hai. Jald hi aayegi!</div>
+  <div id="latestPostContainer">
+    <div class="empty-posts">Loading latest memory...</div>
+  </div>
+  
+  <button id="loadOldMemoriesBtn" onclick="toggleOldMemories()" style="display:none; width:100%; margin-top:15px; padding:12px; background:#fff; color:#8B0000; border:2px solid #8B0000; border-radius:10px; font-weight:700; cursor:pointer;">
+    ⬇️ Purani Yaadein (Old Memories)
+  </button>
+
+  <div id="oldMemoriesContainer" style="display:none; margin-top:15px;">
+    <div class="posts-grid" id="oldPostsGrid"></div>
   </div>
 </section>
 
@@ -1132,9 +1141,11 @@ waitForFirebase(function() {
         // Check for pending requests
         checkForRequests();
 
-        if (d.role === 'owner' || d.role === 'admin') {
+        if (d.role === 'owner' || d.role === 'admin' || d.role === 'moderator') {
           const adminBtn = document.getElementById('adminPanelBtn');
           if (adminBtn) adminBtn.style.display = 'flex';
+          const postBtn = document.getElementById('createPostBtn');
+          if (postBtn) postBtn.style.display = 'flex';
           document.getElementById('founderName').textContent = d.name || 'Ali Hassan';
           document.getElementById('founderAvatar').textContent = (d.name || 'A').charAt(0).toUpperCase();
         }
@@ -1393,37 +1404,86 @@ waitForFirebase(function() {
   loadStats();
 
   // Load posts
+  let globalPosts = [];
+  
   async function loadPosts() {
     try {
-      const snap = await db.collection('posts').orderBy('createdAt', 'desc').limit(6).get();
-      const posts = [];
-      snap.forEach(doc => posts.push({ id: doc.id, ...doc.data() }));
-      window.allPosts = posts;
-      renderPosts(posts);
-      document.getElementById('statPosts').textContent = posts.length;
+      const snap = await db.collection('posts').get();
+      globalPosts = [];
+      snap.forEach(doc => globalPosts.push({ id: doc.id, ...doc.data() }));
+      
+      // Manual sort newest first
+      globalPosts.sort((a, b) => {
+        const tA = a.createdAt ? a.createdAt.seconds : 0;
+        const tB = b.createdAt ? b.createdAt.seconds : 0;
+        return tB - tA;
+      });
+
+      renderPosts(globalPosts);
+      document.getElementById('statPosts').textContent = globalPosts.length;
     } catch (e) {
       console.error(e);
-      renderPosts([]);
+      document.getElementById('latestPostContainer').innerHTML = '<div class="empty-posts">Error loading posts.</div>';
     }
   }
   loadPosts();
 
   window.renderPosts = function(posts) {
-    const grid = document.getElementById('postsGrid');
+    const latestBox = document.getElementById('latestPostContainer');
+    const oldGrid = document.getElementById('oldPostsGrid');
+    const oldBtn = document.getElementById('loadOldMemoriesBtn');
+
     if (!posts || posts.length === 0) {
-      grid.innerHTML = '<div class="empty-posts">' + (translations[currentLang].noPostsYet || '') + '</div>';
+      latestBox.innerHTML = '<div class="empty-posts" style="text-align:center;padding:30px;background:white;border-radius:12px;color:#888;">🌟 Abhi koi memory post nahi hui. Jald hi aayegi!</div>';
+      oldBtn.style.display = 'none';
       return;
     }
-    grid.innerHTML = posts.map(p => `
-      <div class="post-card" onclick="openPostModal('${p.id}')">
-        <div class="post-img ${p.image ? 'has-img' : ''}" ${p.image ? 'style="background-image:url(' + p.image + ')"' : ''}>${p.image ? '' : '🩸'}</div>
-        <div class="post-body">
-          <div class="post-tag">${p.tag || 'STORY'}</div>
-          <div class="post-title">${p.title || ''}</div>
-          <div class="post-text">${(p.caption || '').substring(0, 90)}${(p.caption || '').length > 90 ? '...' : ''}</div>
+
+    // Render Latest Post
+    const latest = posts[0];
+    const dateStr = latest.createdAt ? new Date(latest.createdAt.seconds * 1000).toLocaleDateString() : '';
+    latestBox.innerHTML = `
+      <div class="post-card" style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.08);">
+        <div style="width:100%; height:250px; background:url(${latest.imgUrl}) center/cover;"></div>
+        <div style="padding:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="color:#8B0000; font-size:18px; margin:0;">${latest.name} <span style="font-size:12px; color:#888; font-weight:normal;">📍 ${latest.city}</span></h3>
+            <span style="font-size:11px; color:#999;">${dateStr}</span>
+          </div>
+          <p style="font-size:14px; line-height:1.7; color:#444; margin:0;">${latest.caption}</p>
+          <div style="margin-top:15px; font-size:12px; color:#888; font-style:italic;">Posted by: ${latest.author}</div>
         </div>
       </div>
-    `).join('');
+    `;
+
+    // Render Old Posts (Hidden by default)
+    if (posts.length > 1) {
+      oldBtn.style.display = 'block';
+      const oldPosts = posts.slice(1);
+      oldGrid.innerHTML = oldPosts.map(p => `
+        <div class="post-card" style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.06); margin-bottom:15px;">
+          <div style="width:100%; height:180px; background:url(${p.imgUrl}) center/cover;"></div>
+          <div style="padding:15px;">
+            <h4 style="color:#8B0000; font-size:15px; margin-bottom:5px;">${p.name} <span style="font-size:11px; color:#888; font-weight:normal;">📍 ${p.city}</span></h4>
+            <p style="font-size:13px; line-height:1.6; color:#555; margin:0;">${p.caption}</p>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      oldBtn.style.display = 'none';
+    }
+  };
+
+  window.toggleOldMemories = function() {
+    const box = document.getElementById('oldMemoriesContainer');
+    const btn = document.getElementById('loadOldMemoriesBtn');
+    if (box.style.display === 'none') {
+      box.style.display = 'block';
+      btn.innerHTML = '⬆️ Purani Yaadein Chupayein (Hide)';
+    } else {
+      box.style.display = 'none';
+      btn.innerHTML = '⬇️ Purani Yaadein (Old Memories)';
+    }
   };
 
   window.searchDonors = async function() {
