@@ -1516,7 +1516,35 @@ waitForFirebase(function() {
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
-      // 2. Prepare WhatsApp link for Owner
+      
+              // ==========================================
+              // TRIGGER PUSH NOTIFICATIONS
+              // ==========================================
+              try {
+                const donorsSnap = await db.collection('donors')
+                  .where('blood', '==', currentReqBlood)
+                  .where('city', '==', currentReqCity.toLowerCase().trim())
+                  .get();
+
+                donorsSnap.forEach(doc => {
+                  const donor = doc.data();
+                  if (donor.fcmToken) {
+                    fetch('/api/send-notification', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        token: donor.fcmToken,
+                        title: '🚨 Blood Needed in ' + currentReqCity,
+                        body: `${currentReqBlood} ki zarurat hai. Hospital: ${hospital}. Kya aap madad kar sakte hain?`
+                      })
+                    }).catch(e => console.log('Push error:', e));
+                  }
+                });
+              } catch (error) {
+                console.error("Error sending push notifications:", error);
+              }
+
+              // 2. Prepare WhatsApp link for Owner
       const waText = encodeURIComponent(`🚨 *URGENT BLOOD REQUEST* 🚨\n\nBlood: ${currentReqBlood}\nCity: ${currentReqCity}\nPatient: ${name}\nPhone: ${phone}\nHospital: ${hospital}\nArea: ${area}\n\nPlease check site!`);
       const waLink = `https://wa.me/923016631720?text=${waText}`;
 
