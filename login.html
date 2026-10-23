@@ -305,6 +305,7 @@
 <script src="firebase/firebase-app-compat.js"></script>
 <script src="firebase/firebase-auth-compat.js"></script>
 <script src="firebase/firebase-firestore-compat.js"></script>
+<script src="firebase/firebase-messaging-compat.js"></script>
 <script>
 // ==========================================
 // TRANSLATIONS
@@ -653,6 +654,7 @@ waitForFirebase(function() {
     }
   });
 
+  window.setupFCM();
   window.goToHome = function() { window.location.href = 'index.html'; };
   window.goToProfile = function() { window.location.href = 'profile.html'; };
   window.logout = async function() {
