@@ -197,6 +197,10 @@
                   Name: ${r.donorName}<br>
                   Phone: <a href="tel:${r.donorPhone}">${r.donorPhone}</a>
                 </div>
+              ` : r.status === 'rejected' ? `
+                <div class="donor-box" style="background:#f8d7da; border-color:#e74c3c; color:#721c24;">
+                  <b>❌ Request Rejected By:</b> ${r.rejectedBy || 'Donor'}
+                </div>
               ` : '<div style="font-size:11px;color:#999;margin-top:8px;">Waiting for donor to accept...</div>'}
             </div>
           `;
