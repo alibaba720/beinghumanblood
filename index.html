@@ -1610,6 +1610,17 @@ waitForFirebase(function() {
   }
   loadStats();
 
+      // Check URL parameter for opening requests automatically (From Notification Click)
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('openRequests') === 'true') {
+        setTimeout(() => {
+          if (document.getElementById('userName').textContent !== 'Login') {
+            openDonorReqModal();
+          }
+        }, 2000); // Wait for Firebase to load user data
+      }
+    
+
   // Load posts
   let globalPosts = [];
   

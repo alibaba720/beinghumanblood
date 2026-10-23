@@ -46,6 +46,11 @@ module.exports = async (req, res) => {
     const message = {
       notification: { title, body },
       token: token,
+      webpush: {
+        fcmOptions: {
+          link: 'https://beinghumanblood.vercel.app/?openRequests=true'
+        }
+      }
     };
 
     const response = await admin.messaging().send(message);
