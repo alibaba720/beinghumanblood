@@ -113,6 +113,7 @@
 <script src="firebase/firebase-app-compat.js"></script>
 <script src="firebase/firebase-auth-compat.js"></script>
 <script src="firebase/firebase-firestore-compat.js"></script>
+<script src="firebase/firebase-messaging-compat.js"></script>
 <script>
   function waitForFirebase(callback, tries) {
     tries = tries || 0;
@@ -233,13 +234,21 @@
 
   window.forceEnableNotifications = async function() {
     try {
+      alert("Step 1: Checking browser support...");
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        return alert("Ye browser push notifications support nahi karta.");
+        return alert("❌ Ye browser push notifications support nahi karta.");
       }
       
+      alert("Step 2: Asking for permission...");
       const permission = await Notification.requestPermission();
+      alert("Permission result: " + permission);
+      
       if (permission === 'granted') {
+        alert("Step 3: Registering Service Worker...");
         const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        alert("Service Worker Registered!");
+        
+        alert("Step 4: Fetching Token from Firebase...");
         const messaging = firebase.messaging();
         
         const token = await messaging.getToken({
@@ -248,13 +257,14 @@
         });
         
         if (token) {
+          alert("Token Mila: " + token.substring(0, 10) + "...\n\nStep 5: Saving to Database...");
           const user = firebase.auth().currentUser;
           if (user) {
             await db.collection('users').doc(user.uid).update({ fcmToken: token });
             await db.collection('donors').doc(user.uid).update({ fcmToken: token }).catch(()=>{});
-            alert("✅ Token successfully saved!\n\nToken start: " + token.substring(0, 15) + "...");
+            alert("✅ Token successfully saved to DB!");
           } else {
-            alert("Error: User not logged in.");
+            alert("❌ Error: User not logged in.");
           }
         } else {
           alert("❌ Permission granted, but token was empty.");
@@ -263,7 +273,7 @@
         alert("❌ Permission denied. Please allow notifications in browser settings.");
       }
     } catch (e) {
-      alert("FCM Error: " + e.message);
+      alert("❌ FCM Error: " + e.message);
       console.error(e);
     }
   };
