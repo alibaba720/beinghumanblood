@@ -1200,7 +1200,33 @@ waitForFirebase(function() {
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  auth.onAuthStateChanged(async function(user) {
+  
+    async function updateTokenSilently() {
+      try {
+        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+          const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+          const messaging = firebase.messaging();
+          const currentToken = await messaging.getToken({
+            vapidKey: "BKajJKv3dIDBFvOdrVIPGug4O5ITYBs_kDaKW9Y_IPrKe1L2XcmDITqY--LaKBydvkppKc52JGTjQGSxrSyagcA",
+            serviceWorkerRegistration: registration
+          });
+          if (currentToken) {
+            const user = firebase.auth().currentUser;
+            if (user) {
+              // Update silently in background
+              await db.collection('users').doc(user.uid).update({ fcmToken: currentToken }).catch(()=>{});
+              await db.collection('donors').doc(user.uid).update({ fcmToken: currentToken }).catch(()=>{});
+              console.log("Token updated silently.");
+            }
+          }
+        }
+      } catch (e) {
+        console.log("Silent token update error:", e);
+      }
+    }
+    
+
+    auth.onAuthStateChanged(async function(user) {
     if (!user) { 
       document.getElementById('userName').textContent = 'Login';
       return; 
@@ -1224,6 +1250,7 @@ waitForFirebase(function() {
         // Check for pending requests
         checkForRequests();
         setupFCM();
+        updateTokenSilently();
 
         if (d.role === 'owner' || d.role === 'admin' || d.role === 'moderator') {
           const adminBtn = document.getElementById('adminPanelBtn');
@@ -1365,7 +1392,8 @@ waitForFirebase(function() {
 
       closeDonorReqModal();
       checkForRequests();
-        setupFCM(); // Refresh dot
+        setupFCM();
+        updateTokenSilently(); // Refresh dot
     } catch (e) {
       alert("Error: " + e.message);
     }
