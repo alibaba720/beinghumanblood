@@ -582,7 +582,7 @@ waitForFirebase(function() {
       showMsg('su_msg', msg, 'error');
     }
 
-    document.getElementById('loadingOverlay').style.display = 'none';
+    
     btn.disabled = false;
   };
 
@@ -641,6 +641,8 @@ waitForFirebase(function() {
         }
       } catch (e) { console.error(e); }
     } else {
+      document.getElementById('appBox').style.display = 'block';
+      document.getElementById('loaderBox').style.display = 'none';
       mainTabs.style.display = 'flex';
       welcome.classList.remove('show');
       document.getElementById('signup').classList.add('active');
