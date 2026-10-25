@@ -206,7 +206,7 @@
 <body class="lang-en">
 
         <!-- LOADING SPINNER -->
-        <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:9999; justify-content:center; align-items:center; flex-direction:column;">
+        <div style="display:none;" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:9999; justify-content:center; align-items:center; flex-direction:column;">
           <div style="border: 6px solid #f3f3f3; border-top: 6px solid #8B0000; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;"></div>
           <p style="margin-top:15px; color:#8B0000; font-weight:bold; font-size:16px;">Processing...</p>
         </div>
@@ -223,8 +223,9 @@
     <p>Ek qatra, ek zindagi</p>
   </div>
 
+  <div id="loaderBox" class="loader">⏳ Loading...</div>
 
-  <div id="appBox" style="display:block;">
+  <div id="appBox" style="display:none;">
     <div id="mainTabs" class="tabs">
       <div class="tab active" id="tabSignup" onclick="showTab('signup')">Sign Up</div>
       <div class="tab" id="tabLogin" onclick="showTab('login')">Login</div>
@@ -294,7 +295,7 @@
         <div class="role-badge" id="w_role">Donor</div>
         <div class="info">📞 <b id="w_phone"></b></div>
         <div class="info">📍 <b id="w_city"></b> • 🩸 <b id="w_blood"></b></div>
-        <div class="info" id="w_email_row" style="display:block;">📧 <b id="w_email"></b></div>
+        <div class="info" id="w_email_row" style="display:none;">📧 <b id="w_email"></b></div>
         <div class="btn-row">
           <button onclick="goToHome()">Home Kholo</button>
           <button class="btn-secondary" onclick="goToProfile()">Edit Profile</button>
@@ -472,6 +473,7 @@ function waitForFirebase(cb, tries) {
   tries = tries || 0;
   if (typeof firebase !== 'undefined' && firebase.auth) return cb();
   if (tries < 40) return setTimeout(() => waitForFirebase(cb, tries + 1), 250);
+  document.getElementById('loaderBox').textContent = '❌ Firebase load nahi hua.';
 }
 
 waitForFirebase(function() {
@@ -487,6 +489,7 @@ waitForFirebase(function() {
   const auth = firebase.auth();
   const db = firebase.firestore();
 
+  document.getElementById('loaderBox').style.display = 'none';
   document.getElementById('appBox').style.display = 'block';
 
   // ==========================================
@@ -638,7 +641,6 @@ waitForFirebase(function() {
         }
       } catch (e) { console.error(e); }
     } else {
-      document.getElementById('appBox').style.display = 'block';
       mainTabs.style.display = 'flex';
       welcome.classList.remove('show');
       document.getElementById('signup').classList.add('active');
