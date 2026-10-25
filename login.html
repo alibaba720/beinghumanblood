@@ -613,46 +613,24 @@ waitForFirebase(function() {
   // ==========================================
   // AUTH STATE
   // ==========================================
-  auth.onAuthStateChanged(async function(user) {
-    const mainTabs = document.getElementById('mainTabs');
-    const welcome = document.getElementById('welcome');
-
+  
+auth.onAuthStateChanged(async function(user) {
     if (user) {
-      try {
-        const doc = await db.collection('users').doc(user.uid).get();
-        if (doc.exists) {
-          const d = doc.data();
-          mainTabs.style.display = 'none';
-          document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-          welcome.classList.add('show');
-
-          document.getElementById('w_avatar').textContent = (d.name || 'U').charAt(0).toUpperCase();
-          document.getElementById('w_name').textContent = d.name || 'User';
-          document.getElementById('w_phone').textContent = d.phone || '';
-          document.getElementById('w_city').textContent = d.city || '';
-          document.getElementById('w_blood').textContent = d.blood || '';
-
-          if (d.email) {
-            document.getElementById('w_email').textContent = d.email;
-            document.getElementById('w_email_row').style.display = 'block';
-          } else {
-            document.getElementById('w_email_row').style.display = 'none';
-          }
-
-          const roleEl = document.getElementById('w_role');
-          roleEl.textContent = (d.role || 'donor').toUpperCase();
-          roleEl.className = 'role-badge role-' + (d.role || 'donor');
-        }
-      } catch (e) { console.error(e); }
+        window.location.href = 'index.html';
+        return;
     } else {
-      mainTabs.style.display = 'flex';
-      welcome.classList.remove('show');
-      document.getElementById('signup').classList.add('active');
-      document.getElementById('login').classList.remove('active');
-      document.getElementById('tabSignup').classList.add('active');
-      document.getElementById('tabLogin').classList.remove('active');
+        document.getElementById('mainTabs').style.display = 'flex';
+        document.getElementById('welcome').style.display = 'none';
+        document.getElementById('welcome').classList.remove('show');
+        document.getElementById('signup').classList.add('active');
+        document.getElementById('login').classList.remove('active');
+        document.getElementById('tabSignup').classList.add('active');
+        document.getElementById('tabLogin').classList.remove('active');
+        document.getElementById('loaderBox').style.display = 'none';
+        document.getElementById('appBox').style.display = 'block';
     }
-  });
+});
+
 
   window.setupFCM();
   window.goToHome = function() { window.location.href = 'index.html'; };
