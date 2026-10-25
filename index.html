@@ -1235,6 +1235,11 @@ waitForFirebase(function() {
       const doc = await db.collection('users').doc(user.uid).get();
       if (doc.exists) {
         const d = doc.data();
+        if (d.role === 'banned') {
+          await auth.signOut();
+          window.location.href = 'login.html';
+          return;
+        }
         window.currentUserData = d;
         document.getElementById('userName').textContent = (d.name || 'User').split(' ')[0];
         if (d.dpUrl) {

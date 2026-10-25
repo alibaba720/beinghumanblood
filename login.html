@@ -616,6 +616,12 @@ waitForFirebase(function() {
   
 auth.onAuthStateChanged(async function(user) {
     if (user) {
+        const doc = await db.collection('users').doc(user.uid).get();
+        if (doc.exists && doc.data().role === 'banned') {
+            await auth.signOut();
+            window.location.reload();
+            return;
+        }
         window.location.href = 'index.html';
         return;
     } else {

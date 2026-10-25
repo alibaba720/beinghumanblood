@@ -268,6 +268,7 @@
                   <option value="donor">Make Donor</option>
                   <option value="moderator">Make Moderator</option>
                   <option value="admin">Make Admin</option>
+                    <option value="banned" style="color:#e74c3c; font-weight:bold;">Ban User (Cancel Reg)</option>
                 </select>
               ` : '<div style="font-size:12px;font-weight:bold;color:#d35400;">Protected</div>'}
             </div>
@@ -303,7 +304,11 @@
     // ==========================================
     window.updateRole = async function(uid, newRole) {
       if (!newRole) return;
-      if (!confirm(`Kya aap waqai is user ka role change karke '${newRole}' karna chahte hain?`)) {
+      if (newRole === 'banned') {
+        if (!confirm(`WARNING: Kya aap waqai is user ko BAN karna chahte hain? Wo dobara login nahi kar sakega.`)) return loadMembers();
+      } else {
+        if (!confirm(`Kya aap waqai is user ka role change karke '${newRole}' karna chahte hain?`)) return loadMembers();
+      }
         return loadMembers(); // Reset select
       }
       
