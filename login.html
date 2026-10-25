@@ -223,9 +223,8 @@
     <p>Ek qatra, ek zindagi</p>
   </div>
 
-  <div id="loaderBox" class="loader">⏳ Loading...</div>
 
-  <div id="appBox" style="display:none;">
+  <div id="appBox" style="display:block;">
     <div id="mainTabs" class="tabs">
       <div class="tab active" id="tabSignup" onclick="showTab('signup')">Sign Up</div>
       <div class="tab" id="tabLogin" onclick="showTab('login')">Login</div>
@@ -295,7 +294,7 @@
         <div class="role-badge" id="w_role">Donor</div>
         <div class="info">📞 <b id="w_phone"></b></div>
         <div class="info">📍 <b id="w_city"></b> • 🩸 <b id="w_blood"></b></div>
-        <div class="info" id="w_email_row" style="display:none;">📧 <b id="w_email"></b></div>
+        <div class="info" id="w_email_row" style="display:block;">📧 <b id="w_email"></b></div>
         <div class="btn-row">
           <button onclick="goToHome()">Home Kholo</button>
           <button class="btn-secondary" onclick="goToProfile()">Edit Profile</button>
@@ -473,7 +472,6 @@ function waitForFirebase(cb, tries) {
   tries = tries || 0;
   if (typeof firebase !== 'undefined' && firebase.auth) return cb();
   if (tries < 40) return setTimeout(() => waitForFirebase(cb, tries + 1), 250);
-  document.getElementById('loaderBox').textContent = '❌ Firebase load nahi hua.';
 }
 
 waitForFirebase(function() {
@@ -489,7 +487,6 @@ waitForFirebase(function() {
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  document.getElementById('loaderBox').style.display = 'none';
   document.getElementById('appBox').style.display = 'block';
 
   // ==========================================
@@ -642,7 +639,6 @@ waitForFirebase(function() {
       } catch (e) { console.error(e); }
     } else {
       document.getElementById('appBox').style.display = 'block';
-      document.getElementById('loaderBox').style.display = 'none';
       mainTabs.style.display = 'flex';
       welcome.classList.remove('show');
       document.getElementById('signup').classList.add('active');
