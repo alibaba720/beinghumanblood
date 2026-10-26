@@ -1583,6 +1583,7 @@ waitForFirebase(function() {
   };
 
   window.submitReq = async function() {
+      document.getElementById('globalLoadingOverlay').style.display = 'flex';
     const name = document.getElementById('reqName').value.trim();
     const phone = document.getElementById('reqPhone').value.trim();
     const hospital = document.getElementById('reqHospital').value.trim();
