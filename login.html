@@ -240,7 +240,7 @@
         <input type="text" id="su_name" placeholder="Ali Hassan">
 
         <label>WhatsApp Number *</label>
-        <input type="tel" id="su_phone" placeholder="03001234567" maxlength="11">
+        <input type="tel" id="su_phone" placeholder="+923001234567" maxlength="15">
         <div class="hint">Ye tumhara login aur contact number hoga</div>
 
         <label>Password (6+ characters) *</label>
@@ -269,7 +269,7 @@
       <!-- LOGIN -->
       <div id="login" class="section">
         <label>WhatsApp Number</label>
-        <input type="tel" id="li_phone" placeholder="03001234567" maxlength="11">
+        <input type="tel" id="li_phone" placeholder="+923001234567" maxlength="15">
 
         <label>Password</label>
         <input type="password" id="li_pass" placeholder="••••••••">
@@ -430,7 +430,22 @@ function setLangText() {
 // ==========================================
 // HELPERS
 // ==========================================
-function normalizePhone(p) {
+function getCountryFromPhone(rawPhone) {
+        rawPhone = rawPhone.trim();
+        if (rawPhone.startsWith('+')) {
+            if (rawPhone.startsWith('+92')) return 'Pakistan';
+            if (rawPhone.startsWith('+1')) return 'USA/Canada';
+            if (rawPhone.startsWith('+44')) return 'UK';
+            if (rawPhone.startsWith('+971')) return 'UAE';
+            if (rawPhone.startsWith('+966')) return 'Saudi Arabia';
+            if (rawPhone.startsWith('+61')) return 'Australia';
+            if (rawPhone.startsWith('+91')) return 'India';
+            return 'Other';
+        }
+        return 'Pakistan';
+    }
+
+    function normalizePhone(p) {
   p = (p || '').replace(/\D/g, '');
   if (p.startsWith('92') && p.length === 12) p = '0' + p.substring(2);
   if (p.length === 10 && p.startsWith('3')) p = '0' + p;
@@ -499,6 +514,7 @@ waitForFirebase(function() {
       return showMsg('su_msg', t.fillAll, 'error');
     }
 
+    const country = getCountryFromPhone(phoneRaw);
     const phone = normalizePhone(phoneRaw);
     if (phone.length !== 11 || !phone.startsWith('03')) {
       return showMsg('su_msg', t.invalidPhone, 'error');
@@ -588,6 +604,7 @@ waitForFirebase(function() {
       return showMsg('li_msg', t.fillAll, 'error');
     }
 
+    const country = getCountryFromPhone(phoneRaw);
     const phone = normalizePhone(phoneRaw);
     if (phone.length !== 11) {
       return showMsg('li_msg', t.invalidPhone, 'error');

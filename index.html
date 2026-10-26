@@ -570,9 +570,9 @@ body.lang-urdu .insp-text { font-size: 17px; line-height: 2.4; text-align: right
   /* RESPONSIVE */
   @media (max-width: 700px) {
     .impact-grid { grid-template-columns: repeat(2, 1fr); padding: 20px 15px; }
-    .impact-item { border-right: none; padding: 10px 5px; }
+    .impact-item { border-right: none; padding: 15px 5px; border-bottom: 1px solid #f0e8e0; }
     .impact-item:nth-child(odd) { border-right: 1px solid #f0e8e0; }
-    .impact-item:nth-child(1), .impact-item:nth-child(2) { border-bottom: 1px solid #f0e8e0; margin-bottom: 5px; }
+    .impact-item:nth-last-child(1) { border-bottom: none; }
     
     .mv-grid, .steps-grid, .posts-grid { grid-template-columns: 1fr; }
     
@@ -699,6 +699,10 @@ body.lang-urdu .insp-text { font-size: 17px; line-height: 2.4; text-align: right
       <span class="impact-lbl" data-i18n="donorsLabel">Donors</span>
     </div>
     <div class="impact-item">
+      <span class="impact-num" id="statCountries">0</span>
+      <span class="impact-lbl">Countries</span>
+    </div>
+    <div class="impact-item">
       <span class="impact-num" id="statCities">0</span>
       <span class="impact-lbl" data-i18n="citiesLabel">Cities</span>
     </div>
@@ -706,7 +710,7 @@ body.lang-urdu .insp-text { font-size: 17px; line-height: 2.4; text-align: right
       <span class="impact-num" id="statLives">0</span>
       <span class="impact-lbl" data-i18n="livesLabel">Lives Saved</span>
     </div>
-    <div class="impact-item">
+    <div class="impact-item" style="grid-column: span 2; border-right: none;">
       <span class="impact-num" id="statPosts">0</span>
       <span class="impact-lbl" data-i18n="postsLabel">Stories</span>
     </div>
@@ -1181,7 +1185,20 @@ document.addEventListener('click', function(e) {
 // ==========================================
 // FIREBASE
 // ==========================================
-function waitForFirebase(cb, tries) {
+function getCountryFromPhone(rawPhone) {
+        rawPhone = rawPhone.trim();
+        if (rawPhone.startsWith('+')) {
+            if (rawPhone.startsWith('+92')) return 'Pakistan';
+            if (rawPhone.startsWith('+1')) return 'USA/Canada';
+            if (rawPhone.startsWith('+44')) return 'UK';
+            if (rawPhone.startsWith('+971')) return 'UAE';
+            if (rawPhone.startsWith('+966')) return 'Saudi Arabia';
+            return 'Other';
+        }
+        return 'Pakistan';
+    }
+
+    function waitForFirebase(cb, tries) {
   tries = tries || 0;
   if (typeof firebase !== 'undefined' && firebase.auth) return cb();
   if (tries < 40) return setTimeout(() => waitForFirebase(cb, tries + 1), 250);
@@ -1686,12 +1703,22 @@ waitForFirebase(function() {
     try {
       const snap = await db.collection('donors').get();
       const cities = new Set();
+      const countries = new Set();
       snap.forEach(doc => {
-        const c = doc.data().city;
+        const data = doc.data();
+        const c = data.city;
         if (c) cities.add(c.toLowerCase().trim());
+        
+        if (data.country) {
+          countries.add(data.country);
+        } else if (data.phone) {
+          const raw = data.phone.startsWith('0') ? '+92' + data.phone.substring(1) : data.phone;
+          countries.add(getCountryFromPhone(raw));
+        }
       });
       document.getElementById('statDonors').textContent = snap.size;
       document.getElementById('statCities').textContent = cities.size;
+      document.getElementById('statCountries').textContent = countries.size > 0 ? countries.size : 1;
       document.getElementById('statLives').textContent = Math.floor(snap.size / 4);
     } catch (e) { console.error(e); }
   }

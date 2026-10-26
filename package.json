@@ -4,6 +4,6 @@
   "description": "BeingHuman Blood Push Notification Server",
   "main": "api/send-notification.js",
   "dependencies": {
-    "firebase-admin": "^11.10.1"
+    "firebase-admin": "^11.11.1"
   }
 }
