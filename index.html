@@ -1632,17 +1632,18 @@ waitForFirebase(function() {
 
       
               // ==========================================
-              // TRIGGER PUSH NOTIFICATIONS
+              // TRIGGER PUSH NOTIFICATIONS (SAFE MODE)
               // ==========================================
               try {
-                const donorsSnap = await db.collection('donors')
-                  .where('blood', '==', currentReqBlood)
-                  .where('city', '==', currentReqCity.toLowerCase().trim())
-                  .get();
-
+                // Fetch all donors and filter in JS to avoid missing index errors
+                const donorsSnap = await db.collection('donors').get();
+                
                 donorsSnap.forEach(doc => {
                   const donor = doc.data();
-                  if (donor.fcmToken) {
+                  const matchBlood = donor.blood === currentReqBlood;
+                  const matchCity = donor.city && donor.city.toLowerCase().trim() === currentReqCity.toLowerCase().trim();
+                  
+                  if (matchBlood && matchCity && donor.fcmToken) {
                     fetch('/api/send-notification', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
