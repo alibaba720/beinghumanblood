@@ -248,11 +248,14 @@
 
     window.updateRole = async function(uid, newRole) {
       if (!newRole) return;
+      const lang = localStorage.getItem('bh_lang') || 'en';
+      let confirmMsg = "";
       if (newRole === 'banned') {
-        if (!confirm(`WARNING: Kya aap waqai is user ko BAN karna chahte hain?`)) return loadMembers();
+        confirmMsg = lang === 'urdu' ? "انتباہ: کیا آپ واقعی اس صارف کو بین کرنا چاہتے ہیں؟" : lang === 'roman' ? "WARNING: Kya aap waqai is user ko BAN karna chahte hain?" : "WARNING: Are you sure you want to BAN this user?";
       } else {
-        if (!confirm(`Kya aap waqai is user ka role change karke '${newRole}' karna chahte hain?`)) return loadMembers();
+        confirmMsg = lang === 'urdu' ? `کیا آپ واقعی اس صارف کا رول '${newRole}' کرنا چاہتے ہیں؟` : lang === 'roman' ? `Kya aap waqai is user ka role change karke '${newRole}' karna chahte hain?` : `Are you sure you want to change this user's role to '${newRole}'?`;
       }
+      if (!confirm(confirmMsg)) return loadMembers();
       try {
         await db.collection('users').doc(uid).update({ role: newRole });
         await db.collection('donors').doc(uid).update({ role: newRole }).catch(()=>{});
@@ -265,7 +268,14 @@
     };
 
     window.toggleChatAccess = async function(uid, currentStatus) {
-      if (!confirm(`Kya aap waqai is user ko ${currentStatus ? 'Chat se remove' : 'Chat mein add'} karna chahte hain?`)) return;
+      const lang = localStorage.getItem('bh_lang') || 'en';
+      let confirmMsg = "";
+      if (currentStatus) {
+          confirmMsg = lang === 'urdu' ? "کیا آپ واقعی اس صارف کو چیٹ سے نکالنا چاہتے ہیں؟" : lang === 'roman' ? "Kya aap waqai is user ko Chat se remove karna chahte hain?" : "Are you sure you want to remove this user from Chat?";
+      } else {
+          confirmMsg = lang === 'urdu' ? "کیا آپ واقعی اس صارف کو چیٹ میں شامل کرنا چاہتے ہیں؟" : lang === 'roman' ? "Kya aap waqai is user ko Chat mein add karna chahte hain?" : "Are you sure you want to add this user to Chat?";
+      }
+      if (!confirm(confirmMsg)) return;
       try {
         const newStatus = !currentStatus;
         const updateData = { isChatMember: newStatus };
@@ -278,7 +288,6 @@
         await db.collection('users').doc(uid).update(updateData);
         await db.collection('donors').doc(uid).update(updateData).catch(()=>{});
         
-        // Language based simple alert
         const lang = localStorage.getItem('bh_lang') || 'en';
         let msg = "";
         if (newStatus) {
@@ -295,8 +304,10 @@
 
     
     window.muteMember = async function(uid, name, isMuted) {
+      const lang = localStorage.getItem('bh_lang') || 'en';
       if (isMuted) {
-        if(!confirm(`Unmute ${name}?`)) return;
+        let unmuteMsg = lang === 'urdu' ? `کیا آپ ${name} کو ان میوٹ کرنا چاہتے ہیں؟` : lang === 'roman' ? `Unmute ${name}?` : `Unmute ${name}?`;
+        if(!confirm(unmuteMsg)) return;
         try {
           await db.collection('users').doc(uid).update({ isMuted: false, muteExpiry: null });
           await db.collection('donors').doc(uid).update({ isMuted: false, muteExpiry: null }).catch(()=>{});
@@ -304,7 +315,8 @@
           loadMembers();
         } catch(e) { alert(e.message); }
       } else {
-        const hours = prompt(`Mute ${name} for how many hours? (Enter number e.g., 24)`, "24");
+        let mutePrompt = lang === 'urdu' ? `${name} کو کتنے گھنٹے کے لیے میوٹ کرنا ہے؟` : lang === 'roman' ? `Mute ${name} for how many hours? (Enter number e.g., 24)` : `Mute ${name} for how many hours? (Enter number e.g., 24)`;
+        const hours = prompt(mutePrompt, "24");
         if (hours && !isNaN(hours)) {
           const expiry = new Date();
           expiry.setHours(expiry.getHours() + parseInt(hours));
