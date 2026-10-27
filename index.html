@@ -1636,10 +1636,37 @@ waitForFirebase(function() {
         msgDiv.style.wordWrap = 'break-word';
         msgDiv.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
         
+        // Format time
+        let timeString = '';
+        if (msg.createdAt) {
+            const date = msg.createdAt.toDate();
+            timeString = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
         if (isMe) {
           msgDiv.style.alignSelf = 'flex-end';
           msgDiv.style.background = '#dcf8c6';
           msgDiv.style.borderBottomRightRadius = '0';
+          msgDiv.style.cursor = 'pointer';
+          
+          // Add click event for timestamp
+          msgDiv.onclick = function() {
+              const date = msg.createdAt ? msg.createdAt.toDate().toLocaleString() : 'Just now';
+              alert(`Sent at: ${date}`);
+          };
+
+          const textSpan = document.createElement('span');
+          textSpan.textContent = msg.text + " ";
+          msgDiv.appendChild(textSpan);
+
+          const metaSpan = document.createElement('span');
+          metaSpan.style.fontSize = '10px';
+          metaSpan.style.color = '#888';
+          metaSpan.style.float = 'right';
+          metaSpan.style.marginTop = '5px';
+          metaSpan.innerHTML = `${timeString} <span style="color:#34b7f1;">✓✓</span>`;
+          msgDiv.appendChild(metaSpan);
+
         } else {
           msgDiv.style.alignSelf = 'flex-start';
           msgDiv.style.background = '#ffffff';
@@ -1652,10 +1679,26 @@ waitForFirebase(function() {
           nameSpan.style.marginBottom = '3px';
           nameSpan.textContent = msg.senderName || 'User';
           msgDiv.appendChild(nameSpan);
+          
+          const textSpan = document.createElement('span');
+          textSpan.textContent = msg.text + " ";
+          msgDiv.appendChild(textSpan);
+          
+          const metaSpan = document.createElement('span');
+          metaSpan.style.fontSize = '10px';
+          metaSpan.style.color = '#888';
+          metaSpan.style.float = 'right';
+          metaSpan.style.marginTop = '5px';
+          metaSpan.innerHTML = `${timeString}`;
+          msgDiv.appendChild(metaSpan);
+
+          // Add click event for received messages too
+          msgDiv.onclick = function() {
+              const date = msg.createdAt ? msg.createdAt.toDate().toLocaleString() : 'Just now';
+              alert(`Sent at: ${date}`);
+          };
         }
         
-        const textNode = document.createTextNode(msg.text);
-        msgDiv.appendChild(textNode);
         msgBox.appendChild(msgDiv);
       });
       
@@ -1670,15 +1713,15 @@ waitForFirebase(function() {
     
     if (!text || !user) return;
 
-    // RESTRICTION: Block 5 or more consecutive digits (ignoring spaces/dashes)
-    const cleanText = text.replace(/[\s\-\(\)\.]/g, '');
-    if (/\d{5,}/.test(cleanText)) {
-      alert("⚠️ Baraye meharbani chat mein apna ya kisi ka number share na karein.");
-      input.value = text; // Restore text so they don't lose it but can edit
+    // BULLETPROOF RESTRICTION: Block 5 or more digits
+    // Remove spaces, dashes, brackets before checking
+    const cleanText = text.replace(/[^0-9]/g, ''); // Extract only numbers
+    if (cleanText.length >= 5) {
+      alert("⚠️ Baraye meharbani chat mein phone number share na karein.");
       return;
     }
-    
-    input.value = ''; // Clear input immediately
+
+    input.value = ''; // Clear input immediately // Clear input immediately
     
     try {
       const userDoc = await db.collection('users').doc(user.uid).get();
