@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Install BH Chats</title>
+  <link rel="manifest" href="manifest-chat.json">
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; text-align: center; padding: 50px 20px; background: #f4f6f8; }
+    .container { background: white; padding: 30px; border-radius: 15px; max-width: 400px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    h1 { color: #8B0000; margin-bottom: 10px; }
+    p { color: #666; margin-bottom: 25px; font-size: 15px; }
+    button { padding: 15px 30px; font-size: 16px; background: #27ae60; color: white; border: none; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; }
+    button:disabled { background: #ccc; }
+    .icon { font-size: 60px; margin-bottom: 15px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">💬</div>
+    <h1>BH Chats</h1>
+    <p>Install this shortcut to open the chat directly.</p>
+    <button id="installBtn" style="display:none;">Install BH Chats</button>
+    <p id="manualText" style="display:none; margin-top:15px; color:#e74c3c;">Agar button na dikhe, to apne browser ke menu (⋮) se <b>"Add to Home Screen"</b> par click karein.</p>
+  </div>
+
+  <script>
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('installBtn').style.display = 'block';
+    });
+
+    document.getElementById('installBtn').addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          alert("✅ BH Chats installed! Ab aap home screen par icon dekh sakte hain.");
+          window.close();
+        }
+        deferredPrompt = null;
+      }
+    });
+
+    setTimeout(() => {
+      if (!deferredPrompt) {
+        document.getElementById('manualText').style.display = 'block';
+      }
+    }, 2000);
+  </script>
+</body>
+</html>
