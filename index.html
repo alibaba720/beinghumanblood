@@ -1669,6 +1669,14 @@ waitForFirebase(function() {
     const user = firebase.auth().currentUser;
     
     if (!text || !user) return;
+
+    // RESTRICTION: Block 5 or more consecutive digits (ignoring spaces/dashes)
+    const cleanText = text.replace(/[\s\-\(\)\.]/g, '');
+    if (/\d{5,}/.test(cleanText)) {
+      alert("⚠️ Baraye meharbani chat mein apna ya kisi ka number share na karein.");
+      input.value = text; // Restore text so they don't lose it but can edit
+      return;
+    }
     
     input.value = ''; // Clear input immediately
     
