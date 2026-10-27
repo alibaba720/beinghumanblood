@@ -1,0 +1,289 @@
+html_content = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard - BeingHuman Blood</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+  body { background: #f4f6f8; color: #333; padding-bottom: 50px; }
+  .header { background: linear-gradient(135deg, #8B0000, #c0392b); padding: 15px; display: flex; align-items: center; justify-content: space-between; color: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+  .header h1 { font-size: 18px; font-weight: 800; }
+  .back-btn { background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; text-decoration: none; font-size: 13px; }
+  .tabs { display: flex; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; }
+  .tab { flex: 1; padding: 15px; text-align: center; font-weight: 700; color: #888; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; }
+  .tab.active { color: #8B0000; border-bottom-color: #8B0000; background: #fff8f0; }
+  .container { padding: 15px; max-width: 600px; margin: 0 auto; }
+  .section { display: none; }
+  .section.active { display: block; }
+  .search-box { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .search-box h3 { margin-bottom: 10px; color: #8B0000; font-size: 15px; }
+  .search-inputs { display: flex; gap: 10px; margin-bottom: 10px; }
+  .search-inputs select, .search-inputs input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-family: inherit; font-size: 14px; }
+  .search-btn { width: 100%; padding: 10px; background: #8B0000; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+  .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 4px solid #ddd; }
+  .card.pending { border-left-color: #f39c12; }
+  .card.accepted { border-left-color: #27ae60; }
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .card-title { font-size: 16px; font-weight: 800; color: #8B0000; }
+  .badge { font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 20px; text-transform: uppercase; }
+  .badge-pending { background: #fff3cd; color: #856404; }
+  .badge-accepted { background: #d4edda; color: #155724; }
+  .info-row { display: flex; gap: 8px; font-size: 13px; margin-bottom: 6px; color: #555; }
+  .info-row b { color: #222; width: 70px; display: inline-block; }
+  .info-row a { color: #27ae60; text-decoration: none; font-weight: bold; }
+  .donor-box { background: #e8f5e9; padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 13px; border: 1px dashed #27ae60; }
+  .donor-box b { color: #27ae60; }
+  .member-card { display: flex; justify-content: space-between; align-items: center; background: white; padding: 12px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); gap: 10px; }
+  .member-info { flex: 1; min-width: 0; word-break: break-word; }
+  .member-info h4 { font-size: 15px; margin-bottom: 3px; color: #333; line-height: 1.3; display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+  .member-info p { font-size: 12px; color: #666; line-height: 1.4; margin-top: 2px; }
+  .role-badge { font-size: 10px; font-weight: bold; padding: 3px 8px; border-radius: 10px; background: #eee; color: #555; text-transform: uppercase; }
+  .role-owner { background: #FFD700; color: #5a0000; }
+  .role-admin { background: #8B0000; color: white; }
+  .role-moderator { background: #c0392b; color: white; }
+  .role-banned { background: #333; color: white; }
+  .role-donor { background: #27ae60; color: white; }
+  .action-select { padding: 6px; border-radius: 6px; border: 1px solid #ccc; font-size: 12px; font-weight: bold; background: white; color: #8B0000; margin-top: 5px; width: 100%; }
+  .empty-msg { text-align: center; padding: 30px; color: #888; font-size: 14px; }
+</style>
+</head>
+<body>
+<header class="header">
+  <h1>👑 Admin Dashboard</h1>
+  <a href="index.html" class="back-btn">← Back to Site</a>
+</header>
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('requests', event)">📋 Requests</div>
+  <div class="tab" onclick="switchTab('members', event)">👥 Members</div>
+</div>
+<div class="container">
+  <div id="requests" class="section active">
+    <div id="requestsList"><div class="empty-msg">Loading requests...</div></div>
+  </div>
+  <div id="members" class="section">
+    <div class="search-box">
+      <h3>🔍 Search Donors</h3>
+      <div class="search-inputs">
+        <select id="adminSearchBlood">
+          <option value="">All Blood</option>
+          <option value="A+">A+</option><option value="A-">A-</option>
+          <option value="B+">B+</option><option value="B-">B-</option>
+          <option value="AB+">AB+</option><option value="AB-">AB-</option>
+          <option value="O+">O+</option><option value="O-">O-</option>
+        </select>
+        <input type="text" id="adminSearchCity" placeholder="City (e.g. Daska)">
+      </div>
+      <button class="search-btn" onclick="filterAdminMembers()">Search</button>
+    </div>
+    <div id="membersList"><div class="empty-msg">Loading members...</div></div>
+  </div>
+</div>
+<script src="firebase/firebase-app-compat.js"></script>
+<script src="firebase/firebase-auth-compat.js"></script>
+<script src="firebase/firebase-firestore-compat.js"></script>
+<script>
+  function waitForFirebase(cb, tries) {
+    tries = tries || 0;
+    if (typeof firebase !== 'undefined' && firebase.auth) return cb();
+    if (tries < 40) return setTimeout(() => waitForFirebase(cb, tries + 1), 250);
+  }
+
+  waitForFirebase(function() {
+    const firebaseConfig = {
+      apiKey: "AIzaSyAp8lKgJuBKpHdXF4pXHr7U3aXwtZUKv_4",
+      authDomain: "beinghuman-blood-pk.firebaseapp.com",
+      projectId: "beinghuman-blood-pk",
+      storageBucket: "beinghuman-blood-pk.firebasestorage.app",
+      messagingSenderId: "46427863084",
+      appId: "1:46427863084:web:fff219fd6e17fd83e23989"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let allMembersList = [];
+
+    auth.onAuthStateChanged(async function(user) {
+      if (!user) { window.location.href = 'login.html'; return; }
+      try {
+        const doc = await db.collection('users').doc(user.uid).get();
+        if (!doc.exists) { window.location.href = 'index.html'; return; }
+        const d = doc.data();
+        if (d.role !== 'owner' && d.role !== 'admin') {
+          alert('Access Denied: Only Owner/Admin can view this page.');
+          window.location.href = 'index.html';
+          return;
+        }
+        loadRequests();
+        loadMembers();
+      } catch (e) { 
+        document.getElementById('requestsList').innerHTML = '<div class="empty-msg" style="color:red;">Auth Error: ' + e.message + '</div>';
+      }
+    });
+
+    async function loadRequests() {
+      const list = document.getElementById('requestsList');
+      try {
+        const snap = await db.collection('requests').get();
+        if (snap.empty) {
+          list.innerHTML = '<div class="empty-msg">Koi request nahi mili.</div>';
+          return;
+        }
+        let reqs = [];
+        snap.forEach(doc => reqs.push({ id: doc.id, ...doc.data() }));
+        reqs.sort((a, b) => {
+          const tA = a.createdAt ? a.createdAt.seconds : 0;
+          const tB = b.createdAt ? b.createdAt.seconds : 0;
+          return tB - tA;
+        });
+        let html = '';
+        reqs.forEach(r => {
+          const isAccepted = r.status === 'accepted';
+          const date = r.createdAt ? new Date(r.createdAt.seconds * 1000).toLocaleString() : 'N/A';
+          html += `
+            <div class="card ${isAccepted ? 'accepted' : 'pending'}">
+              <div class="card-header">
+                <div class="card-title">🩸 ${r.blood} Needed</div>
+                <span class="badge ${isAccepted ? 'badge-accepted' : 'badge-pending'}">${r.status}</span>
+              </div>
+              <div class="info-row"><b>City:</b> ${r.city} (${r.area})</div>
+              <div class="info-row"><b>Patient:</b> ${r.patientName}</div>
+              <div class="info-row"><b>Phone:</b> <a href="tel:${r.patientPhone}">${r.patientPhone || 'N/A'}</a></div>
+              <div class="info-row"><b>Hospital:</b> ${r.hospital}</div>
+              <div class="info-row"><b>Urgency:</b> ${r.urgency}</div>
+              <div class="info-row"><b>Time:</b> ${date}</div>
+              ${isAccepted ? `
+                <div class="donor-box">
+                  <b>✅ Donor Accepted:</b><br>
+                  Name: ${r.donorName}<br>
+                  Phone: <a href="tel:${r.donorPhone}">${r.donorPhone}</a>
+                </div>
+              ` : r.status === 'rejected' ? `
+                <div class="donor-box" style="background:#f8d7da; border-color:#e74c3c; color:#721c24;">
+                  <b>❌ Request Rejected By:</b> ${r.rejectedBy || 'Donor'}
+                </div>
+              ` : '<div style="font-size:11px;color:#999;margin-top:8px;">Waiting for donor to accept...</div>'}
+            </div>
+          `;
+        });
+        list.innerHTML = html;
+      } catch (e) {
+        list.innerHTML = '<div class="empty-msg" style="color:red;">Error: ' + e.message + '</div>';
+      }
+    }
+
+    async function loadMembers() {
+      const list = document.getElementById('membersList');
+      try {
+        const snap = await db.collection('users').get();
+        if (snap.empty) {
+          list.innerHTML = '<div class="empty-msg">Koi member nahi mila.</div>';
+          return;
+        }
+        allMembersList = [];
+        snap.forEach(doc => allMembersList.push({ id: doc.id, ...doc.data() }));
+        const roleOrder = { owner: 1, admin: 2, moderator: 3, donor: 4 };
+        allMembersList.sort((a, b) => (roleOrder[a.role] || 4) - (roleOrder[b.role] || 4));
+        renderMembers(allMembersList);
+      } catch (e) {
+        list.innerHTML = '<div class="empty-msg" style="color:red;">Error: ' + e.message + '</div>';
+      }
+    }
+
+    function renderMembers(members) {
+      const list = document.getElementById('membersList');
+      if (members.length === 0) {
+        list.innerHTML = '<div class="empty-msg">Koi member nahi mila is search par.</div>';
+        return;
+      }
+
+      let html = '';
+      members.forEach(m => {
+        html += `
+          <div class="member-card">
+            <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:0;">
+              <img src="${m.dpUrl || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}" style="width:45px; height:45px; border-radius:50%; object-fit:cover; border:2px solid #eee; flex-shrink:0;">
+              <div class="member-info">
+                <h4>${m.name} <span class="role-badge role-${m.role}">${m.role}</span></h4>
+                <p>🩸 ${m.blood} • 📍 ${m.city}</p>
+                <p>📞 <a href="tel:${m.phone}" style="color:#8B0000;text-decoration:none;">${m.phone}</a></p>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:5px;">
+              ${m.role !== 'owner' ? `
+                <select class="action-select" onchange="updateRole('${m.id}', this.value)">
+                  <option value="" disabled selected>Change Role</option>
+                  <option value="donor">Make Donor</option>
+                  <option value="moderator">Make Moderator</option>
+                  <option value="admin">Make Admin</option>
+                  <option value="banned" style="color:#e74c3c; font-weight:bold;">Ban User</option>
+                </select>
+                <button onclick="toggleChatAccess('${m.id}', ${m.isChatMember || false})" style="padding:8px; border-radius:6px; border:1px solid #ccc; font-size:12px; font-weight:bold; cursor:pointer; background:${m.isChatMember ? '#f8d7da' : '#d4edda'}; color:${m.isChatMember ? '#721c24' : '#155724'}; width:100%;">
+                  ${m.isChatMember ? 'Remove from Chat' : 'Add to Chat'}
+                </button>
+              ` : '<div style="font-size:12px;font-weight:bold;color:#d35400;">Protected</div>'}
+            </div>
+          </div>
+        `;
+      });
+      list.innerHTML = html;
+    }
+
+    window.filterAdminMembers = function() {
+      const blood = document.getElementById('adminSearchBlood').value;
+      const city = document.getElementById('adminSearchCity').value.trim().toLowerCase();
+      if (!blood && !city) { renderMembers(allMembersList); return; }
+      const filtered = allMembersList.filter(m => {
+        const matchBlood = blood ? m.blood === blood : true;
+        const matchCity = city ? (m.city && m.city.toLowerCase().includes(city)) : true;
+        return matchBlood && matchCity;
+      });
+      renderMembers(filtered);
+    };
+
+    window.updateRole = async function(uid, newRole) {
+      if (!newRole) return;
+      if (newRole === 'banned') {
+        if (!confirm(`WARNING: Kya aap waqai is user ko BAN karna chahte hain?`)) return loadMembers();
+      } else {
+        if (!confirm(`Kya aap waqai is user ka role change karke '${newRole}' karna chahte hain?`)) return loadMembers();
+      }
+      try {
+        await db.collection('users').doc(uid).update({ role: newRole });
+        await db.collection('donors').doc(uid).update({ role: newRole }).catch(()=>{});
+        alert(`Role updated to ${newRole}!`);
+        loadMembers();
+      } catch (e) {
+        alert("Error updating role: " + e.message);
+        loadMembers();
+      }
+    };
+
+    window.toggleChatAccess = async function(uid, currentStatus) {
+      if (!confirm(`Kya aap waqai is user ko ${currentStatus ? 'Chat se remove' : 'Chat mein add'} karna chahte hain?`)) return;
+      try {
+        const newStatus = !currentStatus;
+        await db.collection('users').doc(uid).update({ isChatMember: newStatus });
+        await db.collection('donors').doc(uid).update({ isChatMember: newStatus }).catch(()=>{});
+        alert(newStatus ? "✅ User added to Chat!" : "❌ User removed from Chat!");
+        loadMembers();
+      } catch(e) {
+        alert("Error: " + e.message);
+      }
+    };
+
+    window.switchTab = function(tab, event) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById(tab).classList.add('active');
+    };
+  });
+</script>
+</body>
+</html>"""
+with open('admin.html', 'w', encoding='utf-8') as f:
+    f.write(html_content)
+print("Done: Admin panel completely rewritten!")
