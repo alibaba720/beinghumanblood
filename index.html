@@ -977,6 +977,18 @@ body.lang-urdu .insp-text { font-size: 17px; line-height: 2.4; text-align: right
   </div>
 </div>
 
+
+<!-- ADMIN CHAT ACTION MENU -->
+<div class="modal-overlay" id="adminChatMenu" onclick="if(event.target===this)closeAdminMenu()">
+  <div class="modal" style="max-width: 300px; padding: 20px;">
+    <h3 id="acmName" style="color:#8B0000; margin-bottom:15px; font-size:16px; border-bottom:1px solid #eee; padding-bottom:10px;">User Actions</h3>
+    <button onclick="visitChatProfile()" style="width:100%; padding:12px; margin-bottom:10px; background:#3498db; color:white; border:none; border-radius:8px; font-weight:bold;">👤 Visit Profile</button>
+    <button onclick="muteChatUser()" style="width:100%; padding:12px; margin-bottom:10px; background:#f39c12; color:white; border:none; border-radius:8px; font-weight:bold;">🔇 Mute Member</button>
+    <button onclick="removeChatUser()" style="width:100%; padding:12px; margin-bottom:10px; background:#e74c3c; color:white; border:none; border-radius:8px; font-weight:bold;">❌ Remove from Chat</button>
+    <button onclick="closeAdminMenu()" style="width:100%; padding:12px; background:#eee; color:#333; border:none; border-radius:8px; font-weight:bold;">Cancel</button>
+  </div>
+</div>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
   <div class="modal">
@@ -1597,6 +1609,68 @@ waitForFirebase(function() {
   // ==========================================
   let chatUnsubscribe = null;
 
+  
+  let selectedChatUid = null;
+  let selectedChatName = null;
+
+  window.openAdminChatMenu = function(uid, name) {
+    const user = firebase.auth().currentUser;
+    if (!user || !window.currentUserData) return;
+    
+    // Only admins/owners can see this menu
+    if (window.currentUserData.role !== 'owner' && window.currentUserData.role !== 'admin') return;
+
+    // Don't show menu for self
+    if (uid === user.uid) return;
+
+    selectedChatUid = uid;
+    selectedChatName = name;
+    document.getElementById('acmName').textContent = name;
+    document.getElementById('adminChatMenu').classList.add('show');
+  };
+
+  window.closeAdminMenu = function() {
+    document.getElementById('adminChatMenu').classList.remove('show');
+  };
+
+  window.visitChatProfile = async function() {
+    if (!selectedChatUid) return;
+    try {
+        const doc = await db.collection('users').doc(selectedChatUid).get();
+        if (doc.exists) {
+            const d = doc.data();
+            alert(`Name: ${d.name}\nPhone: ${d.phone}\nCity: ${d.city}\nBlood: ${d.blood}\nRole: ${d.role}`);
+        }
+    } catch(e) { alert(e.message); }
+    closeAdminMenu();
+  };
+
+  window.muteChatUser = async function() {
+    if (!selectedChatUid) return;
+    const hours = prompt(`Mute ${selectedChatName} for how many hours? (e.g., 24)`, "24");
+    if (hours && !isNaN(hours)) {
+        const expiry = new Date();
+        expiry.setHours(expiry.getHours() + parseInt(hours));
+        try {
+            await db.collection('users').doc(selectedChatUid).update({ isMuted: true, muteExpiry: firebase.firestore.Timestamp.fromDate(expiry) });
+            await db.collection('donors').doc(selectedChatUid).update({ isMuted: true, muteExpiry: firebase.firestore.Timestamp.fromDate(expiry) }).catch(()=>{});
+            alert(`User muted for ${hours} hours.`);
+        } catch(e) { alert(e.message); }
+    }
+    closeAdminMenu();
+  };
+
+  window.removeChatUser = async function() {
+    if (!selectedChatUid) return;
+    if (!confirm(`Remove ${selectedChatName} from chat?`)) return;
+    try {
+        await db.collection('users').doc(selectedChatUid).update({ isChatMember: false });
+        await db.collection('donors').doc(selectedChatUid).update({ isChatMember: false }).catch(()=>{});
+        alert("User removed from Chat.");
+    } catch(e) { alert(e.message); }
+    closeAdminMenu();
+  };
+
   window.openChatModal = function() {
     document.getElementById('chatModal').classList.add('show');
     document.getElementById('chatDot').style.display = 'none'; // Hide red dot
@@ -1713,7 +1787,7 @@ waitForFirebase(function() {
                 msgDiv.style.borderTopLeftRadius = '0';
                 
                 msgDiv.innerHTML = `
-                  <div style="font-size: 11px; color: #8B0000; font-weight: bold; margin-bottom: 3px;">${msg.senderName || 'User'}</div>
+                  <div style="font-size: 11px; color: #8B0000; font-weight: bold; margin-bottom: 3px; cursor: pointer; text-decoration: underline;" onclick="event.stopPropagation(); openAdminChatMenu('${msg.uid}', '${msg.senderName}')">${msg.senderName || 'User'}</div>
                   <div style="word-break: break-word; margin-bottom: 12px;">${msg.text}</div>
                   <div style="position: absolute; bottom: 4px; right: 8px; font-size: 10px; color: #888;">
                     ${timeString}
@@ -1737,12 +1811,25 @@ waitForFirebase(function() {
     
     if (!text || !user) return;
 
-    // BULLETPROOF RESTRICTION: Block 5 or more digits
-    // Remove spaces, dashes, brackets before checking
-    const cleanText = text.replace(/[^0-9]/g, ''); // Extract only numbers
-    if (cleanText.length >= 5) {
-      alert("⚠️ Baraye meharbani chat mein phone number share na karein.");
-      return;
+    const userDoc = await db.collection('users').doc(user.uid).get();
+    const uData = userDoc.data();
+
+    // 1. Check if Muted
+    if (uData.isMuted && uData.muteExpiry) {
+        const expiry = uData.muteExpiry.toDate();
+        if (expiry > new Date()) {
+            alert("⚠️ Aapko chat se mute kar diya gaya hai. Waqt khatam hone tak intezar karein.");
+            return;
+        }
+    }
+
+    // 2. Number Restriction (Owner is exempt)
+    if (uData.role !== 'owner') {
+        const cleanText = text.replace(/[^0-9]/g, '');
+        if (cleanText.length >= 5) {
+          alert("⚠️ Baraye meharbani chat mein phone number share na karein.");
+          return;
+        }
     }
 
     input.value = ''; // Clear input immediately // Clear input immediately

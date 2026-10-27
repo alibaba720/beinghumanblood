@@ -223,6 +223,9 @@
                 <button onclick="toggleChatAccess('${m.id}', ${m.isChatMember || false})" style="padding:8px; border-radius:6px; border:1px solid #ccc; font-size:12px; font-weight:bold; cursor:pointer; background:${m.isChatMember ? '#f8d7da' : '#d4edda'}; color:${m.isChatMember ? '#721c24' : '#155724'}; width:100%;">
                   ${m.isChatMember ? 'Remove from Chat' : 'Add to Chat'}
                 </button>
+                <button onclick="muteMember('${m.id}', '${m.name}', ${m.isMuted || false})" style="padding:8px; border-radius:6px; border:1px solid #ccc; font-size:12px; font-weight:bold; cursor:pointer; background:${m.isMuted ? '#fff3cd' : '#f8f9fa'}; color:${m.isMuted ? '#856404' : '#333'}; width:100%; margin-top:5px;">
+                  ${m.isMuted ? 'Unmute User' : 'Mute Chat'}
+                </button>
               ` : '<div style="font-size:12px;font-weight:bold;color:#d35400;">Protected</div>'}
             </div>
           </div>
@@ -274,6 +277,31 @@
       }
     };
 
+    
+    window.muteMember = async function(uid, name, isMuted) {
+      if (isMuted) {
+        if(!confirm(`Unmute ${name}?`)) return;
+        try {
+          await db.collection('users').doc(uid).update({ isMuted: false, muteExpiry: null });
+          await db.collection('donors').doc(uid).update({ isMuted: false, muteExpiry: null }).catch(()=>{});
+          alert("User unmuted successfully.");
+          loadMembers();
+        } catch(e) { alert(e.message); }
+      } else {
+        const hours = prompt(`Mute ${name} for how many hours? (Enter number e.g., 24)`, "24");
+        if (hours && !isNaN(hours)) {
+          const expiry = new Date();
+          expiry.setHours(expiry.getHours() + parseInt(hours));
+          try {
+            await db.collection('users').doc(uid).update({ isMuted: true, muteExpiry: firebase.firestore.Timestamp.fromDate(expiry) });
+            await db.collection('donors').doc(uid).update({ isMuted: true, muteExpiry: firebase.firestore.Timestamp.fromDate(expiry) }).catch(()=>{});
+            alert(`User muted for ${hours} hours.`);
+            loadMembers();
+          } catch(e) { alert(e.message); }
+        }
+      }
+    };
+    
     window.switchTab = function(tab, event) {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
