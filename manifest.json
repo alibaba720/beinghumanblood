@@ -1,0 +1,15 @@
+{
+  "name": "BeingHuman Chat",
+  "short_name": "BH Chat",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#8B0000",
+  "theme_color": "#8B0000",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
