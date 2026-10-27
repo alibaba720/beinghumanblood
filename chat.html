@@ -91,12 +91,27 @@
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
+    let joinedAtTime = 0;
+    // Owner and Admin see all messages. Normal users only see messages after they joined.
+    if (currentUserData && currentUserData.role !== 'owner' && currentUserData.role !== 'admin') {
+        if (currentUserData.chatJoinedAt) {
+            joinedAtTime = currentUserData.chatJoinedAt.toMillis();
+        } else {
+            joinedAtTime = Date.now(); // Fallback: only see new messages
+        }
+    }
+
     db.collection('chat_messages').orderBy('createdAt', 'desc').limit(200).onSnapshot(snapshot => {
       msgBox.innerHTML = '';
       let validMessages = [];
       snapshot.forEach(doc => {
         const msg = doc.data();
-        if (msg.createdAt && msg.createdAt.toDate() >= sevenDaysAgo) validMessages.push(msg);
+        const msgTime = msg.createdAt ? msg.createdAt.toMillis() : Date.now();
+        
+        // Only push if message is after joined time AND within 7 days
+        if (msgTime >= joinedAtTime && msg.createdAt && msg.createdAt.toDate() >= sevenDaysAgo) {
+            validMessages.push(msg);
+        }
       });
 
       if (validMessages.length === 0) {

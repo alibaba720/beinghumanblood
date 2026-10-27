@@ -1758,6 +1758,16 @@ waitForFirebase(function() {
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
+      // Determine if we need to filter by join time
+      let joinedAtTime = 0;
+      if (window.currentUserData && window.currentUserData.role !== 'owner' && window.currentUserData.role !== 'admin') {
+          if (window.currentUserData.chatJoinedAt) {
+              joinedAtTime = window.currentUserData.chatJoinedAt.toMillis();
+          } else {
+              joinedAtTime = Date.now();
+          }
+      }
+
       // Fetch latest 200 messages ordered by newest first
       chatUnsubscribe = db.collection('chat_messages')
         .orderBy('createdAt', 'desc')
@@ -1768,8 +1778,10 @@ waitForFirebase(function() {
           let validMessages = [];
           snapshot.forEach(doc => {
             const msg = doc.data();
-            // Only keep messages from last 7 days
-            if (msg.createdAt && msg.createdAt.toDate() >= sevenDaysAgo) {
+            const msgTime = msg.createdAt ? msg.createdAt.toMillis() : Date.now();
+            
+            // Only keep messages after joined time AND within 7 days
+            if (msgTime >= joinedAtTime && msg.createdAt && msg.createdAt.toDate() >= sevenDaysAgo) {
               validMessages.push(msg);
             }
           });

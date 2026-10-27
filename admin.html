@@ -268,9 +268,16 @@
       if (!confirm(`Kya aap waqai is user ko ${currentStatus ? 'Chat se remove' : 'Chat mein add'} karna chahte hain?`)) return;
       try {
         const newStatus = !currentStatus;
-        await db.collection('users').doc(uid).update({ isChatMember: newStatus });
-        await db.collection('donors').doc(uid).update({ isChatMember: newStatus }).catch(()=>{});
-        alert(newStatus ? "✅ User added to Chat!" : "❌ User removed from Chat!");
+        const updateData = { isChatMember: newStatus };
+        
+        // If adding to chat, set the join timestamp
+        if (newStatus) {
+            updateData.chatJoinedAt = firebase.firestore.FieldValue.serverTimestamp();
+        }
+        
+        await db.collection('users').doc(uid).update(updateData);
+        await db.collection('donors').doc(uid).update(updateData).catch(()=>{});
+        alert(newStatus ? "✅ User added to Chat! (Purani chats usko nazar nahi aayengi)" : "❌ User removed from Chat!");
         loadMembers();
       } catch(e) {
         alert("Error: " + e.message);
