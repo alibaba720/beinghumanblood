@@ -269,7 +269,10 @@
                   <option value="moderator">Make Moderator</option>
                   <option value="admin">Make Admin</option><option value="banned" style="color:#e74c3c; font-weight:bold;">Ban User</option>
                 </select>
-              ` : '<div style="font-size:12px;font-weight:bold;color:#d35400;">Protected</div>'}
+                  <button onclick="toggleChatAccess('${m.id}', ${m.isChatMember || false})" style="padding:8px; border-radius:6px; border:1px solid #ccc; font-size:12px; font-weight:bold; cursor:pointer; background:${m.isChatMember ? '#f8d7da' : '#d4edda'}; color:${m.isChatMember ? '#721c24' : '#155724'}; width: 100%; margin-top:8px;">
+                    ${m.isChatMember ? 'Remove from Chat' : 'Add to Chat'}
+                  </button>
+                ` : '<div style="font-size:12px;font-weight:bold;color:#d35400;">Protected</div>')}
             </div>
           </div>
         `;
