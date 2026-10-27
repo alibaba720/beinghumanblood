@@ -1,7 +1,7 @@
 {
   "name": "BH Chats",
   "short_name": "BH Chats",
-  "start_url": "index.html?openChat=true",
+  "start_url": "/chat.html",
   "display": "standalone",
   "background_color": "#8B0000",
   "theme_color": "#8B0000",
