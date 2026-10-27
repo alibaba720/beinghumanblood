@@ -1280,7 +1280,7 @@ waitForFirebase(function() {
       const doc = await db.collection('users').doc(user.uid).get();
       if (doc.exists) {
         const d = doc.data();
-        if (d.isChatMember) {
+        if (d.isChatMember || d.role === 'owner' || d.role === 'admin') {
           const chatBtn = document.getElementById('chatBtn');
           if (chatBtn) chatBtn.style.display = 'flex';
         }
