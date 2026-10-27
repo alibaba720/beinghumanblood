@@ -7,9 +7,10 @@
   "theme_color": "#8B0000",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+      "src": "chat-icon.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
