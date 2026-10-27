@@ -1892,7 +1892,8 @@ waitForFirebase(function() {
     if (uData.isMuted && uData.muteExpiry) {
         const expiry = uData.muteExpiry.toDate();
         if (expiry > new Date()) {
-            alert("⚠️ Aapko chat se mute kar diya gaya hai. Waqt khatam hone tak intezar karein.");
+            const lang = localStorage.getItem('bh_lang') || 'en';
+            alert(lang === 'urdu' ? "⚠️ آپ کو چیٹ سے میوٹ کر دیا گیا ہے۔" : "⚠️ Aapko chat se mute kar diya gaya hai.");
             return;
         }
     }
@@ -1901,7 +1902,8 @@ waitForFirebase(function() {
     if (uData.role !== 'owner') {
         const cleanText = text.replace(/[^0-9]/g, '');
         if (cleanText.length >= 5) {
-          alert("⚠️ Baraye meharbani chat mein phone number share na karein.");
+          const lang = localStorage.getItem('bh_lang') || 'en';
+            alert(lang === 'urdu' ? "⚠️ چیٹ میں نمبر شیئر نہ کریں۔" : "⚠️ Baraye meharbani chat mein phone number share na karein.");
           return;
         }
     }

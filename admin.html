@@ -277,7 +277,16 @@
         
         await db.collection('users').doc(uid).update(updateData);
         await db.collection('donors').doc(uid).update(updateData).catch(()=>{});
-        alert(newStatus ? "✅ User added to Chat! (Purani chats usko nazar nahi aayengi)" : "❌ User removed from Chat!");
+        
+        // Language based simple alert
+        const lang = localStorage.getItem('bh_lang') || 'en';
+        let msg = "";
+        if (newStatus) {
+            msg = lang === 'urdu' ? "✅ ممبر چیٹ میں شامل ہو گیا۔" : lang === 'roman' ? "✅ Member chat mein add ho gaya." : "✅ Member added to chat.";
+        } else {
+            msg = lang === 'urdu' ? "❌ ممبر چیٹ سے نکال دیا گیا۔" : lang === 'roman' ? "❌ Member chat se remove ho gaya." : "❌ Member removed from chat.";
+        }
+        alert(msg);
         loadMembers();
       } catch(e) {
         alert("Error: " + e.message);
@@ -291,7 +300,7 @@
         try {
           await db.collection('users').doc(uid).update({ isMuted: false, muteExpiry: null });
           await db.collection('donors').doc(uid).update({ isMuted: false, muteExpiry: null }).catch(()=>{});
-          alert("User unmuted successfully.");
+          alert(localStorage.getItem('bh_lang') === 'urdu' ? "✅ ممبر کو ان میوٹ کر دیا گیا ہے۔" : "✅ User unmuted successfully.");
           loadMembers();
         } catch(e) { alert(e.message); }
       } else {
@@ -302,7 +311,7 @@
           try {
             await db.collection('users').doc(uid).update({ isMuted: true, muteExpiry: firebase.firestore.Timestamp.fromDate(expiry) });
             await db.collection('donors').doc(uid).update({ isMuted: true, muteExpiry: firebase.firestore.Timestamp.fromDate(expiry) }).catch(()=>{});
-            alert(`User muted for ${hours} hours.`);
+            alert(localStorage.getItem('bh_lang') === 'urdu' ? `ممبر کو ${hours} گھنٹے کے لیے میوٹ کر دیا گیا ہے۔` : `User muted for ${hours} hours.`);
             loadMembers();
           } catch(e) { alert(e.message); }
         }

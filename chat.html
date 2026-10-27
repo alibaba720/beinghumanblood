@@ -180,7 +180,8 @@
 
     if (currentUserData.isMuted && currentUserData.muteExpiry) {
         if (currentUserData.muteExpiry.toDate() > new Date()) {
-            alert("⚠️ Aapko mute kar diya gaya hai.");
+            const lang = localStorage.getItem('bh_lang') || 'en';
+            alert(lang === 'urdu' ? "⚠️ آپ کو چیٹ سے میوٹ کر دیا گیا ہے۔" : "⚠️ Aapko mute kar diya gaya hai.");
             return;
         }
     }
@@ -188,7 +189,8 @@
     if (currentUserData.role !== 'owner') {
         const cleanText = text.replace(/[^0-9]/g, '');
         if (cleanText.length >= 5) {
-          alert("⚠️ Number share na karein.");
+          const lang = localStorage.getItem('bh_lang') || 'en';
+            alert(lang === 'urdu' ? "⚠️ نمبر شیئر نہ کریں۔" : "⚠️ Number share na karein.");
           return;
         }
     }
