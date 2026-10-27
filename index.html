@@ -627,6 +627,46 @@ body.lang-urdu .insp-text { font-size: 17px; line-height: 2.4; text-align: right
 .contact-box button {
   width: 100%; padding: 14px; background: #8B0000; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer;
 }
+
+/* DOWNLOAD SECTION */
+.download-section {
+  background: linear-gradient(135deg, #fff8e1, #ffecb3);
+  border: 2px solid #FFD700;
+  border-radius: 16px;
+  padding: 25px 20px;
+  text-align: center;
+  margin: 20px 18px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.download-section h2 { color: #8B0000; font-size: 22px; margin-bottom: 10px; }
+.download-section p { font-size: 14px; color: #555; margin-bottom: 15px; line-height: 1.6; }
+.dl-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #8B0000, #c0392b);
+  color: white !important;
+  padding: 15px 30px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 5px 15px rgba(139,0,0,0.3);
+  margin-bottom: 15px;
+  width: 100%;
+  max-width: 300px;
+  transition: transform 0.2s;
+}
+.dl-btn:active { transform: scale(0.95); }
+.dl-instructions {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: left;
+  font-size: 13px;
+  color: #444;
+  margin-top: 15px;
+  border-left: 4px solid #f39c12;
+}
+
 </style>
 
 </head>
@@ -638,6 +678,46 @@ body.lang-urdu .insp-text { font-size: 17px; line-height: 2.4; text-align: right
 </div>
 <style>
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* DOWNLOAD SECTION */
+.download-section {
+  background: linear-gradient(135deg, #fff8e1, #ffecb3);
+  border: 2px solid #FFD700;
+  border-radius: 16px;
+  padding: 25px 20px;
+  text-align: center;
+  margin: 20px 18px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.download-section h2 { color: #8B0000; font-size: 22px; margin-bottom: 10px; }
+.download-section p { font-size: 14px; color: #555; margin-bottom: 15px; line-height: 1.6; }
+.dl-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #8B0000, #c0392b);
+  color: white !important;
+  padding: 15px 30px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 5px 15px rgba(139,0,0,0.3);
+  margin-bottom: 15px;
+  width: 100%;
+  max-width: 300px;
+  transition: transform 0.2s;
+}
+.dl-btn:active { transform: scale(0.95); }
+.dl-instructions {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: left;
+  font-size: 13px;
+  color: #444;
+  margin-top: 15px;
+  border-left: 4px solid #f39c12;
+}
+
 </style>
 
 <div id="toastContainer"></div>
@@ -879,6 +959,23 @@ body.lang-urdu .insp-text { font-size: 17px; line-height: 2.4; text-align: right
     <textarea id="ctMessage" rows="4" placeholder="Apna sawal ya mashwara yahan likhein..."></textarea>
     
     <button onclick="submitContact()" id="ctBtn">Send Message</button>
+  </div>
+</section>
+
+
+<!-- DOWNLOAD APK SECTION -->
+<section class="download-section" id="download-apk-section">
+  <h2>📱 Download BeingHuman App</h2>
+  <p>Get the official Android app for a faster and better experience. Bilkul free!</p>
+  
+  <a href="https://drive.google.com/uc?export=download&id=1aO86NQHZ8xtqdk2jSUWMyllFltM3PkeB" class="dl-btn" target="_blank">📥 Download APK Now</a>
+  
+  <div class="dl-instructions">
+    <b>Installation Guide:</b><br>
+    1. Download the APK file.<br>
+    2. Open the file and click "Install".<br>
+    3. If a warning appears, go to Settings and enable <b>"Allow from this source"</b>.<br>
+    4. Open the app and enjoy!
   </div>
 </section>
 
@@ -2294,5 +2391,10 @@ function openPostModal(id) {
 setLang(currentLang);
 detectCountryAndSetLang();
 </script>
+
+<a href="https://drive.google.com/uc?export=download&id=1aO86NQHZ8xtqdk2jSUWMyllFltM3PkeB" target="_blank" style="position:fixed; bottom:20px; right:20px; background:#27ae60; color:white; padding:12px 20px; border-radius:30px; font-weight:bold; text-decoration:none; box-shadow:0 4px 15px rgba(0,0,0,0.3); z-index:9999; display:flex; align-items:center; gap:8px; font-size:14px;">
+  📥 Download App
+</a>
+
 </body>
 </html>
