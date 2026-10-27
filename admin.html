@@ -318,6 +318,20 @@
       }
     };
 
+    
+    window.toggleChatAccess = async function(uid, currentStatus) {
+      if (!confirm(`Kya aap waqai is user ko ${currentStatus ? 'Chat se remove' : 'Chat mein add'} karna chahte hain?`)) return;
+      try {
+        const newStatus = !currentStatus;
+        await db.collection('users').doc(uid).update({ isChatMember: newStatus });
+        await db.collection('donors').doc(uid).update({ isChatMember: newStatus }).catch(()=>{});
+        alert(newStatus ? "✅ User added to Chat!" : "❌ User removed from Chat!");
+        loadMembers(); // Refresh list
+      } catch(e) {
+        alert("Error: " + e.message);
+      }
+    };
+
     window.switchTab = function(tab, event) {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
