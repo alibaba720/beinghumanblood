@@ -52,7 +52,10 @@
 <body>
 <header class="header">
   <h1>👑 Admin Dashboard</h1>
-  <a href="index.html" class="back-btn">← Back to Site</a>
+  <div style="display:flex; gap:10px;">
+    <button onclick="changeMyPassword()" class="back-btn" style="background:#f39c12; color:white;">🔑 My Password</button>
+    <a href="index.html" class="back-btn">← Back to Site</a>
+  </div>
 </header>
 <div class="tabs">
   <div class="tab active" onclick="switchTab('requests', event)">📋 Requests</div>
@@ -352,6 +355,31 @@
         
         if (data.success) {
           alert(`✅ Password successfully reset for ${name}!\n\nNew Password: ${newPass}`);
+        } else {
+          alert("❌ Error: " + data.error);
+        }
+      } catch(e) {
+        alert("❌ Network error: " + e.message);
+      }
+    };
+
+    
+    window.changeMyPassword = async function() {
+      const newPass = prompt("Enter your NEW password (min 6 characters):");
+      if (!newPass) return;
+      if (newPass.length < 6) return alert("Password must be at least 6 characters.");
+      
+      try {
+        const user = firebase.auth().currentUser;
+        const res = await fetch('/api/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: user.uid, newPassword: newPass })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+          alert("✅ Mubarak ho! Aapka password successfully change ho gaya hai.\n\nNaya Password yaad rakhna!");
         } else {
           alert("❌ Error: " + data.error);
         }
